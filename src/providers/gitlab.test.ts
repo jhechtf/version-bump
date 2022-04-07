@@ -1,4 +1,4 @@
-import { GitlabProvider } from './gitlab.ts';
+import GitlabProvider from './gitlab.com.ts';
 
 import { assertEquals } from 'deps';
 

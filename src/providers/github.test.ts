@@ -1,4 +1,4 @@
-import { GithubProvider } from './github.ts';
+import GithubProvider from './github.com.ts';
 
 import { assertEquals } from 'deps';
 
