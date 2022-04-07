@@ -18,4 +18,4 @@ export {
   assertObjectMatch,
 } from 'https://deno.land/std@0.132.0/testing/asserts.ts';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
