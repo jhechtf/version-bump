@@ -18,4 +18,10 @@ export {
   assertObjectMatch,
 } from 'https://deno.land/std@0.132.0/testing/asserts.ts';
 
+export {
+  emptyDir,
+  ensureDir,
+  ensureFile,
+} from 'https://deno.land/std@0.132.0/fs/mod.ts';
+
 export const VERSION = '0.1.1';
