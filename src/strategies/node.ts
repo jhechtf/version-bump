@@ -4,17 +4,18 @@ import { fileExists } from 'src/util.ts';
 
 import Git from 'src/git.ts';
 
-import { readLines, resolve } from 'deps';
+import { Args, readLines, resolve } from 'deps';
 
 export default class NodeStrategy implements BumpStrategy {
   #cwd: string;
   #git: Git;
-
+  #args: Args;
   static VERSION_REGEX = /"version":\s?"(?<currentVersion>.*)"\s?(?<ending>,?)/;
 
-  constructor(cwd: string = Deno.cwd(), git: Git) {
+  constructor(cwd: string = Deno.cwd(), git: Git, args: Args) {
     this.#cwd = cwd;
     this.#git = git;
+    this.#args = args;
   }
   async bump(newVersion: string) {
     const packageJson = resolve(this.#cwd, 'package.json');

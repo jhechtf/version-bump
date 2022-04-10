@@ -4,8 +4,9 @@ export default class GitlabProvider implements IGitProvider {
   constructor(public readonly url: URL) {
   }
   gitDiffUrl(from: string, to = 'HEAD'): string {
-    return `https://${this.url.hostname}${
-      this.url.port !== '443' ? ':' + this.url.port : ''
-    }${this.url.pathname}/-/compare/${from}..${to}`;
+    return `https://${this.url.hostname}${this.url.pathname}/-/compare/${from}..${to}`;
+  }
+  commitUrl(commit: string): string {
+    return `https://${this.url.hostname}${this.url.pathname}/-/commit/${commit}`;
   }
 }

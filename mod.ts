@@ -3,7 +3,7 @@ import { makePreset, PresetBuildable } from 'src/preset.ts';
 import Git from './src/git.ts';
 import { BumpConstructable, BumpStrategy, makeStrategy } from 'src/strategy.ts';
 import { makeChangelogWriter } from 'src/generator.ts';
-import { makeGitProvider, GitProviderBuildable } from 'src/provider.ts';
+import { GitProviderBuildable, makeGitProvider } from 'src/provider.ts';
 import { DefaultWriter } from 'src/changelog/default.ts';
 import { ChangelogWriter } from 'src/generator.ts';
 
@@ -34,7 +34,7 @@ if (!strategyArg.startsWith('http')) {
 const stratImport = await import(stratPath)
   .then((res) => (res.default || res) as BumpConstructable);
 
-strategy = makeStrategy(stratImport, CWD);
+strategy = makeStrategy(stratImport, args, CWD);
 
 if (!strategy) {
   throw Error('Could not load file bump strategy: ' + strategyArg);
@@ -119,13 +119,15 @@ let providerValue: GitProviderBuildable | null = null;
 
 const parsedRemoteUrl = await Git.parseGitRemoteUrl(gitRemote);
 // Can't go forward without a parsed URL.
-if(!parsedRemoteUrl) throw new Deno.errors.BadResource('Cannot parse url');
+if (!parsedRemoteUrl) throw new Deno.errors.BadResource('Cannot parse url');
 
 // If the provider is null then we see if we have one that can be used.
-if(provider === null) {
+if (provider === null) {
   try {
-    providerValue = await import(`./src/providers/${parsedRemoteUrl.host.split(':')[0]}.ts`)
-      .then(res => (res.default || res) as GitProviderBuildable);
+    providerValue = await import(
+      `./src/providers/${parsedRemoteUrl.host.split(':')[0]}.ts`
+    )
+      .then((res) => (res.default || res) as GitProviderBuildable);
   } catch (e) {
     console.error(e);
     throw e;
@@ -134,8 +136,7 @@ if(provider === null) {
 
 let changelogWriter: ChangelogWriter | null = null;
 
-if(providerValue) {
-
+if (providerValue) {
   changelogWriter = makeChangelogWriter(
     DefaultWriter,
     args,
@@ -151,16 +152,19 @@ if(providerValue) {
  * 3. Write the version file.
  */
 
-if(!changelogWriter) {
+if (!changelogWriter) {
   throw new Deno.errors.BadResource('Whoops');
 }
 
 const results = await Promise.allSettled([
   changelogWriter.write(changelogPath, bumpedVersion, commits),
-  strategy.bump(bumpedVersion)
+  strategy.bump(bumpedVersion),
 ]);
 
-if(results.some(result => result.status === 'rejected')) throw new Error('Something failed, abort ship');
+if (results.some((result) => result.status === 'rejected')) {
+  console.log(results);
+  throw new Error('Something failed, abort ship');
+}
 // Commit the changes
 await git.add();
 

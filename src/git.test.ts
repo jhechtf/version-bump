@@ -12,3 +12,6 @@ for (const [url, expected] of Object.entries(urlMap)) {
     );
   });
 }
+
+// It is possible that along with the changes being made to test the actual CLI
+// itself that we could add in something more specific for this?

@@ -4,5 +4,8 @@
       "singleQuote": true
     }
   },
-  "importMap": "./import_map.json"
+  "importMap": "./import_map.json",
+  "tasks": {
+    "test": "deno test --allow-read --allow-write --allow-run"
+  }
 }
