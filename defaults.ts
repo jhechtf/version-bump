@@ -6,5 +6,5 @@ export const argDefaults = {
   changelogPath: 'CHANGELOG.md',
   baseVersion: false,
   firstRelease: false,
-  versionPrefix: 'v'
+  versionPrefix: 'v',
 };
