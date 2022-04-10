@@ -36,9 +36,9 @@ export default class Git {
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];
   }
 
-  async add(files: string[] = ['.'] ) {
+  async add(files: string[] = ['.']) {
     const { code, stderr } = await this.run('add', ...files);
-    if(stderr) throw new Error(stderr);
+    if (stderr) throw new Error(stderr);
     return code === 0;
   }
 
@@ -51,7 +51,7 @@ export default class Git {
     const { code, stdout, stderr } = await this.run(
       'log',
       `--format=subject:::%s;;;author:::%aN;;;sha:::%H;;;body:::%b${COMMIT_DELIMITER}`,
-      from ? [from, to].join('..') : to
+      from ? [from, to].join('..') : to,
     );
 
     if (code !== 0) {
@@ -81,10 +81,14 @@ export default class Git {
    * @returns true if successful, throws error otherwise
    */
   async commit(msg: string): Promise<boolean> {
-    const { code, stderr } = await this.run('commit', '-m', msg.replaceAll('"', '\\"'));
+    const { code, stderr } = await this.run(
+      'commit',
+      '-m',
+      msg.replaceAll('"', '\\"'),
+    );
 
     if (code !== 0) {
-      const error = stderr
+      const error = stderr;
       throw Error(error);
     }
 
@@ -168,12 +172,14 @@ export default class Git {
       stdin: 'null',
     });
     const { code } = await cmd.status();
+
     if (code !== 0) {
       return {
         stderr: this.#decoder.decode(await cmd.stderrOutput()),
         code,
       };
     }
+
     return {
       stdout: this.#decoder.decode(await cmd.output()),
       code,

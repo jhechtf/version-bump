@@ -7,10 +7,10 @@ export default class AngularPreset implements IPreset {
     commits,
     args: {
       releaseAs,
-      firstRelease
-    }
+      firstRelease,
+    },
   }: CalculateBumpArgs) {
-    if(releaseAs || firstRelease) return releaseAs || currentVersion;
+    if (releaseAs || firstRelease) return releaseAs || currentVersion;
     const v = semver.parse(currentVersion);
     if (!v) throw Error(`Cannot parse current version ${currentVersion}`);
 

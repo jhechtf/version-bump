@@ -2,19 +2,26 @@ import GithubProvider from './github.com.ts';
 
 import { assertEquals } from 'deps';
 
-const url = 'ssh://github.com:4444/jhechtf/some-repo';
-const parsed = new URL(url);
-const provider = new GithubProvider(parsed);
+import { url } from './shared.data.ts';
 
-Deno.test('Check compare', () => {
-  const diffUrl = provider.gitDiffUrl('v0.1.0');
-  assertEquals(
-    diffUrl,
-    'https://github.com:4444/jhechtf/some-repo/compare/v0.1.0..HEAD',
-  );
-  const diffUrl2 = provider.gitDiffUrl('v0.1.0', 'v0.2.0');
-  assertEquals(
-    diffUrl2,
-    'https://github.com:4444/jhechtf/some-repo/compare/v0.1.0..v0.2.0',
-  );
+const provider = new GithubProvider(url('github.com'));
+
+Deno.test('Check compare', async (t) => {
+  await t.step({
+    name: 'commit URL',
+    fn: () =>
+      assertEquals(
+        provider.commitUrl('abcdef'),
+        'https://github.com/user/some-repo/commit/abcdef',
+      ),
+  });
+
+  await t.step({
+    name: 'compare URL',
+    fn: () =>
+      assertEquals(
+        provider.gitDiffUrl('v0.1.0', 'v0.2.0'),
+        'https://github.com/user/some-repo/compare/v0.1.0..v0.2.0',
+      ),
+  });
 });
