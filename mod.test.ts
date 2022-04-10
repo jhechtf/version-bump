@@ -129,7 +129,7 @@ async function tearDown() {
 Deno.test('CLI Test', async (t) => {
   // Setup Testing Environment
   await setupTestingEnv();
-  
+
   // The Changelog Header
 
   const HEADER = [
@@ -152,7 +152,6 @@ Deno.test('CLI Test', async (t) => {
         'packages/github.com/deno/CHANGELOG.md',
       );
 
-      
       // Ensure the header is present.
       assertEquals(
         changelogContent.includes(
@@ -169,10 +168,12 @@ Deno.test('CLI Test', async (t) => {
         changelogContent,
         /\- Adds in new feature \[(\w{8})\]\(https:\/\/github.com\/user\/some-repo\/commit\/\1\w+\)/,
       );
-      const verisonContent = await Deno.readTextFile('packages/github.com/deno/deps.ts');
+      const verisonContent = await Deno.readTextFile(
+        'packages/github.com/deno/deps.ts',
+      );
       assertMatch(
         verisonContent,
-        /VERSION = "0\.2\.0"/
+        /VERSION = "0\.2\.0"/,
       );
     },
   });
@@ -185,14 +186,13 @@ Deno.test('CLI Test', async (t) => {
         '-A',
         '../../../mod.ts',
         '--strategy',
-        'node'
+        'node',
       ], 'packages/github.com/node');
 
       // Grab the changelog file.
       const changelogContent = await Deno.readTextFile(
         'packages/github.com/node/CHANGELOG.md',
       );
-
 
       // Ensure the header is present.
       assertEquals(
@@ -211,11 +211,13 @@ Deno.test('CLI Test', async (t) => {
         /\- Adds in new feature \[(\w{8})\]\(https:\/\/github.com\/user\/some-repo\/commit\/\1\w+\)/,
       );
 
-      const packageContent = JSON.parse(await Deno.readTextFile('packages/github.com/node/package.json')) as any;
+      const packageContent = JSON.parse(
+        await Deno.readTextFile('packages/github.com/node/package.json'),
+      ) as any;
       assertEquals(
         packageContent.version,
-        '0.2.0'
-      )
+        '0.2.0',
+      );
     },
   });
 
