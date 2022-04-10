@@ -15,6 +15,7 @@ export { readLines } from 'https://deno.land/std@0.132.0/io/buffer.ts';
 
 export {
   assertEquals,
+  assertMatch,
   assertObjectMatch,
 } from 'https://deno.land/std@0.132.0/testing/asserts.ts';
 
@@ -24,4 +25,4 @@ export {
   ensureFile,
 } from 'https://deno.land/std@0.132.0/fs/mod.ts';
 
-export const VERSION = '0.1.1';
+export const VERSION = '0.1.2';
