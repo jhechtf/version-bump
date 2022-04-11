@@ -1,9 +1,9 @@
-import { parse } from './deps.ts';
+import { parse, Injectable, Args } from 'deps';
 import { argDefaults } from './defaults.ts';
 /**
  * @description returns a parsed deno argument
  */
-export default parse(Deno.args, {
+const parsed = parse(Deno.args, {
   alias: {
     releaseAs: 'release-as',
     allowEmpty: 'allow-empty',
@@ -11,3 +11,9 @@ export default parse(Deno.args, {
   string: ['release-as'],
   default: argDefaults,
 });
+@Injectable({ isSingleton: true })
+export class VersionArgs {
+  args: Args = parsed;
+}
+
+export default parsed;

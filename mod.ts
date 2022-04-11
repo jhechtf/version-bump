@@ -7,6 +7,8 @@ import { GitProviderBuildable, makeGitProvider } from 'src/provider.ts';
 import { DefaultWriter } from 'src/changelog/default.ts';
 import { ChangelogWriter } from 'src/generator.ts';
 
+export * from 'deps';
+
 import args from './args.ts';
 
 const CWD = Deno.cwd();

@@ -7,4 +7,5 @@ export const argDefaults = {
   baseVersion: false,
   firstRelease: false,
   versionPrefix: 'v',
+  hostUrl: '',
 };

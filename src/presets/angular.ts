@@ -1,7 +1,8 @@
-import { CalculateBumpArgs, GenerateCommitArgs, IPreset } from '../preset.ts';
-import { semver } from '../../deps.ts';
+import { CalculateBumpArgs, GenerateCommitArgs, GitConvention } from 'src/gitConvention.ts';
+import { semver, Injectable } from 'deps';
 
-export default class AngularPreset implements IPreset {
+@Injectable()
+export default class AngularPreset extends GitConvention {
   calculateBump({
     currentVersion,
     commits,

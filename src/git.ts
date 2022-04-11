@@ -1,4 +1,9 @@
+import {
+  Injectable,
+  Args
+} from 'deps';
 import { Commit } from './commit.ts';
+import args, { VersionArgs }  from '../args.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -10,10 +15,12 @@ interface CommandOutput {
 
 const WHOLE =
   /^(?:(?<proto>\w+):\/\/)?(?:(?<username>\w+)(?::(?<pass>.+))?@)?(?<host>.+?)(?::(?<port>\d+))?(:|\/)(?<path>.*)\.git$/m;
-export default class Git {
+@Injectable()
+export class Git {
   #cwd: string;
   prefix: string[] = [];
   #decoder = new TextDecoder();
+  #args: Args;
 
   static parseGitRemoteUrl(url: string): Promise<URL> {
     const matches = url.match(WHOLE);
@@ -31,8 +38,11 @@ export default class Git {
     return Promise.resolve(new URL(fullUrl));
   }
 
-  constructor(cwd: string = Deno.cwd()) {
-    this.#cwd = cwd;
+  constructor(
+    public readonly vargs: VersionArgs
+  ) {
+    this.#args = args;
+    this.#cwd = Deno.cwd();
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];
   }
 

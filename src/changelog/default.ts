@@ -1,4 +1,4 @@
-import { ChangelogWriter } from 'src/generator.ts';
+import { ChangelogWriter } from 'src/changelogWriter.ts';
 import { Commit } from 'src/commit.ts';
 import { type Args, readLines } from 'deps';
 import { capitalize, fileExists } from 'src/util.ts';
