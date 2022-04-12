@@ -1,7 +1,7 @@
 import { VersionStrategy } from 'src/versionStrategy.ts';
 import { readLines, resolve, Args, Injectable } from 'deps';
 import args from '@/args.ts';
-import { Git  } from 'src/git.ts';
+import { Git } from 'src/git.ts';
 
 @Injectable()
 export default class DenoTsStrategy extends VersionStrategy {
@@ -62,7 +62,7 @@ export default class DenoTsStrategy extends VersionStrategy {
       console.info(e);
     }
 
-    const tag = await this.git.getLatestTag();
+    const tag = await this.git.getLatestTag(false);
     if (tag) return tag.indexOf('v') === 0 ? tag.slice(1).trim() : tag.trim();
 
     throw new Deno.errors.NotFound('Cannot find version export in ' + file);

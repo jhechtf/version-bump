@@ -122,12 +122,19 @@ export class Git {
   /**
    * @returns the latest tag on the current branch.
    */
-  async getLatestTag(): Promise<string> {
+  async getLatestTag(exact: boolean = true): Promise<string> {
+    const args = [
+      '--tags',
+      '--abbrev=0',
+      '--exact-match'
+    ];
+
+    if(!exact) {
+      args.splice(-1, 1);
+    }
     const { code, stderr, stdout } = await this.run(
       'describe',
-      '--tags',
-      '--exact-match',
-      '--abbrev=0',
+      ...args
     );
     if (code !== 0) {
       return stderr ?? '';
