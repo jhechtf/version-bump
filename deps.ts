@@ -35,4 +35,4 @@ export {
   type Constructor
 } from 'https://deno.land/x/inject@v0.1.2/helper_types.ts';
 
-export const VERSION = '0.1.2';
+export const VERSION = '10';

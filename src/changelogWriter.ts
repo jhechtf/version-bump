@@ -3,7 +3,7 @@ import { GitProvider } from 'src/gitProvider.ts';
 import { Args, Injectable } from 'deps';
 
 export interface ChangelogWriterBuldable {
-  new (args: Args, remote: URL, provider: GitProvider): ChangelogWriter;
+  new (provider: GitProvider): ChangelogWriter;
 }
 
 export interface ChangelogWriter {
@@ -19,20 +19,13 @@ export interface ChangelogWriter {
  * @description base class needed for Dependency inject, should not be used directly.
  */
 @Injectable()
-export class ChangelogWriterBase implements ChangelogWriter {
-  write() {
-    return Promise.resolve(false);
-  }
-  read() {
-    return Promise.resolve('');
-  }
+export class ChangelogWriter implements ChangelogWriter {
+  // Class left empty on purpose.
 }
 
 export function makeChangelogWriter(
   clw: ChangelogWriterBuldable,
-  args: Args,
-  url: URL,
   provider: GitProvider,
 ) {
-  return new clw(args, url, provider);
+  return new clw(provider);
 }
