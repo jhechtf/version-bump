@@ -1,6 +1,5 @@
 import { Args, Injectable } from 'deps';
 
-
 export interface GitProviderBuildable {
   new (args: Args, url: URL): GitProvider;
 }

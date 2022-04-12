@@ -1,9 +1,6 @@
-import {
-  Injectable,
-  Args
-} from 'deps';
+import { Args, Injectable } from 'deps';
 import { Commit } from './commit.ts';
-import args, { VersionArgs }  from '../args.ts';
+import args, { VersionArgs } from '../args.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -15,6 +12,7 @@ interface CommandOutput {
 
 const WHOLE =
   /^(?:(?<proto>\w+):\/\/)?(?:(?<username>\w+)(?::(?<pass>.+))?@)?(?<host>.+?)(?::(?<port>\d+))?(:|\/)(?<path>.*)\.git$/m;
+
 @Injectable()
 export class Git {
   #cwd: string;
@@ -39,7 +37,7 @@ export class Git {
   }
 
   constructor(
-    public readonly vargs: VersionArgs
+    public readonly vargs: VersionArgs,
   ) {
     this.#args = args;
     this.#cwd = Deno.cwd();
@@ -122,19 +120,19 @@ export class Git {
   /**
    * @returns the latest tag on the current branch.
    */
-  async getLatestTag(exact: boolean = true): Promise<string> {
+  async getLatestTag(exact = true): Promise<string> {
     const args = [
       '--tags',
       '--abbrev=0',
-      '--exact-match'
+      '--exact-match',
     ];
 
-    if(!exact) {
+    if (!exact) {
       args.splice(-1, 1);
     }
     const { code, stderr, stdout } = await this.run(
       'describe',
-      ...args
+      ...args,
     );
     if (code !== 0) {
       return stderr ?? '';
@@ -191,12 +189,15 @@ export class Git {
     const { code } = await cmd.status();
 
     if (code !== 0) {
+      cmd.close();
       return {
         stderr: this.#decoder.decode(await cmd.stderrOutput()),
         code,
       };
     }
 
+    cmd.close();
+    cmd.stderr.close();
     return {
       stdout: this.#decoder.decode(await cmd.output()),
       code,

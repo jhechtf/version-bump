@@ -4,8 +4,9 @@ import { fileExists } from 'src/util.ts';
 
 import { Git } from 'src/git.ts';
 
-import { Args, readLines, resolve, Injectable } from 'deps';
+import { Args, Injectable, readLines, resolve } from 'deps';
 import args from '@/args.ts';
+
 @Injectable()
 export default class NodeStrategy extends VersionStrategy {
   #cwd: string;
@@ -14,9 +15,9 @@ export default class NodeStrategy extends VersionStrategy {
   static VERSION_REGEX = /"version":\s?"(?<currentVersion>.*)"\s?(?<ending>,?)/;
 
   constructor(
-    private readonly git: Git
+    private readonly git: Git,
   ) {
-    super()
+    super();
     this.#cwd = Deno.cwd();
     this.#git = git;
     this.#args = args;

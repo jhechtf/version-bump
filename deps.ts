@@ -28,11 +28,11 @@ export {
 export {
   bootstrap,
   Bootstrapped,
-  Injectable
+  Injectable,
 } from 'https://deno.land/x/inject@v0.1.2/mod.ts';
 
 export {
-  type Constructor
+  type Constructor,
 } from 'https://deno.land/x/inject@v0.1.2/helper_types.ts';
 
 export const VERSION = '0.1.1';

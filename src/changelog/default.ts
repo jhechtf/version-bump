@@ -1,6 +1,6 @@
 import { ChangelogWriter } from 'src/changelogWriter.ts';
 import { Commit } from 'src/commit.ts';
-import { type Args, readLines, Injectable } from 'deps';
+import { type Args, Injectable, readLines } from 'deps';
 import { capitalize, fileExists } from 'src/util.ts';
 import { GitProvider } from 'src/gitProvider.ts';
 import args from '@/args.ts';
@@ -12,7 +12,7 @@ export class DefaultWriter implements ChangelogWriter {
   static HEADER = /^\s?##\s?(.*)$/m;
 
   constructor(
-    public readonly gitProvider:GitProvider,
+    public readonly gitProvider: GitProvider,
   ) {
     this.#args = args;
   }

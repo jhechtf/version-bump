@@ -8,5 +8,5 @@ export const argDefaults = {
   firstRelease: false,
   versionPrefix: 'v',
   hostUrl: '',
-  dryRun: false
+  dryRun: false,
 };

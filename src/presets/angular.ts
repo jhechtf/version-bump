@@ -1,5 +1,9 @@
-import { CalculateBumpArgs, GenerateCommitArgs, GitConvention } from 'src/gitConvention.ts';
-import { semver, Injectable } from 'deps';
+import {
+  CalculateBumpArgs,
+  GenerateCommitArgs,
+  GitConvention,
+} from 'src/gitConvention.ts';
+import { Injectable, semver } from 'deps';
 
 @Injectable()
 export default class AngularPreset extends GitConvention {
