@@ -65,7 +65,7 @@ export default class DenoTsStrategy extends VersionStrategy {
     }
 
     const tag = await this.git.getLatestTag(false);
-    if (tag) return tag.indexOf('v') === 0 ? tag.slice(1).trim() : tag.trim();
-    throw new Deno.errors.NotFound('Cannot find version export in ' + file);
+    if (tag) return tag.indexOf(args.versionPrefix) === 0 ? tag.slice(args.versionPrefix.length).trim() : tag.trim();
+    throw new Deno.errors.NotFound('Cannot find version export in ' + file + 'or fallback git tags');
   }
 }

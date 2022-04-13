@@ -3,7 +3,16 @@ import { Args, Injectable } from 'deps';
 import { Git } from 'src/git.ts';
 
 export interface VersionStrategy {
+  /**
+   * 
+   * @param newVersion the new version to write to the version strategy
+   * @description writes the new version to the source.
+   */
   bump(newVersion: string): Promise<boolean>;
+  /**
+   * @description gets the current version based on this strategy, e.g. from
+   * the package.json(node) file or the deps.ts(deno).
+   */
   getCurrentVersion(): Promise<string>;
 }
 

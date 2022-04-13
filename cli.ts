@@ -72,8 +72,6 @@ export class VersionBumpCli {
       throw new Deno.errors.BadResource(`No commits to use`);
     }
 
-    console.info(commits);
-
     const {
       stdout: gitRemote,
     } = await this.git.remote();

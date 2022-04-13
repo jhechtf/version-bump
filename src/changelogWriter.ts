@@ -19,7 +19,7 @@ export interface ChangelogWriter {
  * @description base class needed for Dependency inject, should not be used directly.
  */
 @Injectable()
-export class ChangelogWriter implements ChangelogWriter {
+export class ChangelogWriter {
   // Class left empty on purpose.
 }
 

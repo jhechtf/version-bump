@@ -22,6 +22,7 @@ export default class NodeStrategy extends VersionStrategy {
     this.#git = git;
     this.#args = args;
   }
+  
   async bump(newVersion: string) {
     const packageJson = resolve(this.#cwd, 'package.json');
     const packageOpen = await Deno.open(packageJson);
@@ -66,7 +67,7 @@ export default class NodeStrategy extends VersionStrategy {
     // If we get here, it means we couldn't find a version in the package.json file
     // We attempt to grab the most recent tag from the repo
     const tag = await this.#git.getLatestTag(false);
-    if (tag) return tag.indexOf('v') === 0 ? tag.slice(1).trim() : tag.trim();
+    if (tag) return tag.indexOf(args.versionPrefix) === 0 ? tag.slice(args.versionPrefix.length).trim() : tag.trim();
 
     throw Error(
       'Could not determine version through package.json or git tags.',
