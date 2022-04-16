@@ -26,11 +26,3 @@ export class VersionStrategy {
   // Class left blank on purpose. Do not directly use this class
 }
 
-export function makeStrategy(
-  bc: VersionStrategyConstructable,
-  args: Args,
-  cwd: string = Deno.cwd(),
-  git: Git = new Git({ args: { _: [] } }),
-) {
-  return new bc(cwd, git, args);
-}

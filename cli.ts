@@ -85,25 +85,50 @@ export class VersionBumpCli {
       throw new Deno.errors.BadResource('Cannot parse git URL');
     }
 
-    const bumpedVersion = this.gitConvention.calculateBump({
+    const bumpedVersion = await this.gitConvention.calculateBump({
       args,
       commits,
       currentVersion: version,
     });
+
+    const releaseCommit = await this.gitConvention.generateCommit({
+      args,
+      commits,
+      version: bumpedVersion
+    });
+
     if (args.dryRun) {
       console.info(
         'Bump commit to ',
         bumpedVersion,
         'Write commit:',
-        this.gitConvention.generateCommit({
-          args,
-          commits,
-          version,
-        }),
+        releaseCommit,
         'Bump the files based on strategy: ',
         this.versionStrategy.constructor.name,
       );
+      return 0;
     }
+
+    console.info('Writing change log + bumping version');
+    const result = await this.versionStrategy.bump(bumpedVersion);
+
+    // Version bump.
+    console.log(result);
+
+    const changelog = await this.changelogWriter.write(
+      resolve(Deno.cwd(), 'CHANGELOG.md'),
+      bumpedVersion,
+      commits
+    );
+
+    // Changelog Value
+    console.info('Changelog', changelog);
+
+    await this.git.add();
+    await this.git.commit(releaseCommit);
+    await this.git.tag(`${args.versionPrefix}${bumpedVersion}`);
+      
+    
   }
 }
 

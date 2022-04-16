@@ -1,6 +1,7 @@
 import { Args, Injectable } from 'deps';
 import { Commit } from './commit.ts';
 import args, { VersionArgs } from '../args.ts';
+import { Cwd } from './cwd.ts'
 
 export const COMMIT_DELIMITER = '------';
 
@@ -15,7 +16,6 @@ const WHOLE =
 
 @Injectable()
 export class Git {
-  #cwd: string;
   prefix: string[] = [];
   #decoder = new TextDecoder();
   #args: Args;
@@ -38,9 +38,9 @@ export class Git {
 
   constructor(
     public readonly vargs: VersionArgs,
+    public readonly cwd: Cwd
   ) {
     this.#args = args;
-    this.#cwd = Deno.cwd();
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];
   }
 
@@ -181,7 +181,7 @@ export class Git {
         command,
         ...args,
       ]),
-      cwd: this.#cwd,
+      cwd: this.cwd.getCwd(),
       stderr: 'piped',
       stdout: 'piped',
       stdin: 'null',
