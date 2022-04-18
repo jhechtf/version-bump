@@ -1,4 +1,4 @@
-import Git from './git.ts';
+import { Git } from './git.ts';
 
 import { assertObject, urlMap } from 'src/testdata/data.ts';
 

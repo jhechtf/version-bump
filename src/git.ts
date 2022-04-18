@@ -1,7 +1,7 @@
 import { Args, Injectable } from 'deps';
 import { Commit } from './commit.ts';
 import args, { VersionArgs } from '../args.ts';
-import { Cwd } from './cwd.ts'
+import { Cwd } from './cwd.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -20,7 +20,7 @@ export class Git {
   #decoder = new TextDecoder();
   #args: Args;
 
-  static parseGitRemoteUrl(url: string): Promise<URL> {
+  static parseGitRemoteUrl(url: string): URL {
     const matches = url.match(WHOLE);
     if (!matches) throw new Deno.errors.NotSupported('Bad syntax');
 
@@ -33,12 +33,12 @@ export class Git {
 
     const fullUrl = `ssh://${username}:@${host}:${port}/${path}`;
 
-    return Promise.resolve(new URL(fullUrl));
+    return new URL(fullUrl);
   }
 
   constructor(
     public readonly vargs: VersionArgs,
-    public readonly cwd: Cwd
+    public readonly cwd: Cwd,
   ) {
     this.#args = args;
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];

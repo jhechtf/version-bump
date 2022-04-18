@@ -2,12 +2,15 @@ import {
   bootstrap,
   Bootstrapped,
   type Constructor,
+  dirname,
+  fromFileUrl,
   resolve,
   toFileUrl,
 } from 'deps';
 
 import { fileExists } from 'src/util.ts';
 
+import { GitProviderBuildable, makeGitProvider } from 'src/gitProvider.ts';
 import {
   VersionStrategy,
   VersionStrategyConstructable,
@@ -85,6 +88,19 @@ export class VersionBumpCli {
       throw new Deno.errors.BadResource('Cannot parse git URL');
     }
 
+    const gitProvider = await import(
+      `src/providers/${parsedGitUrl.hostname.split(':')[0]}.ts`
+    )
+      .then((res) => (res.default || res) as GitProviderBuildable);
+
+    if (!gitProvider) {
+      throw new Deno.errors.NotFound('Could not find git provider');
+    }
+
+    this.changelogWriter.setGitProvider(
+      makeGitProvider(gitProvider, parsedGitUrl),
+    );
+
     const bumpedVersion = await this.gitConvention.calculateBump({
       args,
       commits,
@@ -94,7 +110,7 @@ export class VersionBumpCli {
     const releaseCommit = await this.gitConvention.generateCommit({
       args,
       commits,
-      version: bumpedVersion
+      version: bumpedVersion,
     });
 
     if (args.dryRun) {
@@ -109,26 +125,24 @@ export class VersionBumpCli {
       return 0;
     }
 
-    console.info('Writing change log + bumping version');
-    const result = await this.versionStrategy.bump(bumpedVersion);
-
     // Version bump.
-    console.log(result);
+    await this.versionStrategy.bump(bumpedVersion);
 
-    const changelog = await this.changelogWriter.write(
-      resolve(Deno.cwd(), 'CHANGELOG.md'),
+    // Changelog.
+    await this.changelogWriter.write(
+      './' + args.changelogPath,
       bumpedVersion,
-      commits
+      commits,
     );
 
-    // Changelog Value
-    console.info('Changelog', changelog);
-
+    // Add the changes to the current commit
     await this.git.add();
+    // Make the current release commit
     await this.git.commit(releaseCommit);
+    // Tag the version
     await this.git.tag(`${args.versionPrefix}${bumpedVersion}`);
-      
-    
+
+    console.info('');
   }
 }
 
@@ -143,12 +157,20 @@ const overrides = new Map<Constructor<unknown>, Constructor<unknown>>(
 
 // If the version is not deno
 if (args.versionStrategy !== 'deno') {
+  // Grab the current execution directory.
+  const execDir = dirname(fromFileUrl(import.meta.url));
   // Are we working with a prebuilt versionStrategy? Then they would have a file in the current project
+
   if (
     !args.versionStrategy.endsWith('.ts') &&
-    await fileExists(`src/strategies/${args.versionStrategy}.ts`)
+    await fileExists(
+      resolve(execDir, `src/strategies/${args.versionStrategy}.ts`),
+    )
   ) {
-    const importedVs = await import(`src/strategies/${args.versionStrategy}.ts`)
+    const importedVs = await import(
+      toFileUrl(resolve(execDir, `src/strategies/${args.versionStrategy}.ts`))
+        .href
+    )
       .then((res) =>
         (res.default || res) as unknown as VersionStrategyConstructable
       );
@@ -164,6 +186,7 @@ if (args.versionStrategy !== 'deno') {
         versionStrategy,
       )).href;
     }
+
     const importedVs = await import(versionStrategy)
       .then((res) =>
         (res.default || res) as unknown as VersionStrategyConstructable

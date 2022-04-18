@@ -13,6 +13,7 @@ export interface ChangelogWriter {
     commits: Commit[],
   ): Promise<boolean>;
   read(filePath: string): Promise<string>;
+  setGitProvider(provider: GitProvider): void;
 }
 
 /**

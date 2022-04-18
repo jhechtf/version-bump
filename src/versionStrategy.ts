@@ -4,7 +4,6 @@ import { Git } from 'src/git.ts';
 
 export interface VersionStrategy {
   /**
-   * 
    * @param newVersion the new version to write to the version strategy
    * @description writes the new version to the source.
    */
@@ -25,4 +24,3 @@ export interface VersionStrategyConstructable {
 export class VersionStrategy {
   // Class left blank on purpose. Do not directly use this class
 }
-
