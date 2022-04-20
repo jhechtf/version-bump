@@ -2,7 +2,7 @@ import GitlabProvider from './gitlab.com.ts';
 
 import { url } from './shared.data.ts';
 
-import { assertEquals } from 'deps';
+import { assertEquals } from '../../deps.ts';
 
 const provider = new GitlabProvider(url('gitlab.com'));
 

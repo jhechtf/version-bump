@@ -1,10 +1,13 @@
 export const argDefaults = {
   allowEmpty: false,
   preset: 'angular',
-  strategy: 'deno',
-  writer: 'default',
+  versionStrategy: 'deno',
+  changelogWriter: 'default',
   changelogPath: 'CHANGELOG.md',
   baseVersion: false,
   firstRelease: false,
   versionPrefix: 'v',
+  hostUrl: '',
+  dryRun: false,
+  gitProvider: '',
 };

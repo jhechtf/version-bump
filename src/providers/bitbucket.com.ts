@@ -1,6 +1,6 @@
-import { IGitProvider } from 'src/provider.ts';
+import { GitProvider } from '../gitProvider.ts';
 
-export default class BitbucketProvider implements IGitProvider {
+export default class BitbucketProvider implements GitProvider {
   constructor(public readonly url: URL) {}
   gitDiffUrl(from: string, to = 'HEAD') {
     return `https://${this.url.hostname}${this.url.pathname}/compare/${from}..${to}`;

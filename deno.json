@@ -7,5 +7,9 @@
   "importMap": "./import_map.json",
   "tasks": {
     "test": "deno test --allow-read --allow-write --allow-run"
+  },
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

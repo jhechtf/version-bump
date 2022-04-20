@@ -1,4 +1,7 @@
+import { Args, Injectable } from '../deps.ts';
 import { Commit } from './commit.ts';
+import args, { VersionArgs } from '../args.ts';
+import { Cwd } from './cwd.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -10,12 +13,14 @@ interface CommandOutput {
 
 const WHOLE =
   /^(?:(?<proto>\w+):\/\/)?(?:(?<username>\w+)(?::(?<pass>.+))?@)?(?<host>.+?)(?::(?<port>\d+))?(:|\/)(?<path>.*)\.git$/m;
-export default class Git {
-  #cwd: string;
+
+@Injectable()
+export class Git {
   prefix: string[] = [];
   #decoder = new TextDecoder();
+  #args: Args;
 
-  static parseGitRemoteUrl(url: string): Promise<URL> {
+  static parseGitRemoteUrl(url: string): URL {
     const matches = url.match(WHOLE);
     if (!matches) throw new Deno.errors.NotSupported('Bad syntax');
 
@@ -28,11 +33,14 @@ export default class Git {
 
     const fullUrl = `ssh://${username}:@${host}:${port}/${path}`;
 
-    return Promise.resolve(new URL(fullUrl));
+    return new URL(fullUrl);
   }
 
-  constructor(cwd: string = Deno.cwd()) {
-    this.#cwd = cwd;
+  constructor(
+    public readonly vargs: VersionArgs,
+    public readonly cwd: Cwd,
+  ) {
+    this.#args = args;
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];
   }
 
@@ -112,12 +120,19 @@ export default class Git {
   /**
    * @returns the latest tag on the current branch.
    */
-  async getLatestTag(): Promise<string> {
+  async getLatestTag(exact = true): Promise<string> {
+    const args = [
+      '--tags',
+      '--abbrev=0',
+      '--exact-match',
+    ];
+
+    if (!exact) {
+      args.splice(-1, 1);
+    }
     const { code, stderr, stdout } = await this.run(
       'describe',
-      '--tags',
-      '--exact-match',
-      '--abbrev=0',
+      ...args,
     );
     if (code !== 0) {
       return stderr ?? '';
@@ -166,7 +181,7 @@ export default class Git {
         command,
         ...args,
       ]),
-      cwd: this.#cwd,
+      cwd: this.cwd.getCwd(),
       stderr: 'piped',
       stdout: 'piped',
       stdin: 'null',
@@ -174,12 +189,15 @@ export default class Git {
     const { code } = await cmd.status();
 
     if (code !== 0) {
+      cmd.close();
       return {
         stderr: this.#decoder.decode(await cmd.stderrOutput()),
         code,
       };
     }
 
+    cmd.close();
+    cmd.stderr.close();
     return {
       stdout: this.#decoder.decode(await cmd.output()),
       code,

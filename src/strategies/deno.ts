@@ -1,16 +1,17 @@
-import { BumpStrategy } from 'src/strategy.ts';
-import { readLines, resolve } from 'deps';
-import { Args } from 'deps';
-import { fileExists } from 'src/util.ts';
-import Git from 'src/git.ts';
-export default class DenoTsStrategy implements BumpStrategy {
+import { VersionStrategy } from '../versionStrategy.ts';
+import { Args, Injectable, readLines, resolve } from '../../deps.ts';
+import args from '../../args.ts';
+import { Git } from '../git.ts';
+
+@Injectable()
+export default class DenoTsStrategy extends VersionStrategy {
   #cwd: string;
   FIND = /VERSION\s?(:|=)\s?('|")(?<currentVersion>.*?)\2(,|;)?/;
-  #git: Git;
   #args: Args;
-  constructor(readonly cwd: string = Deno.cwd(), git: Git, args: Args) {
-    this.#cwd = cwd;
-    this.#git = git;
+
+  constructor(private readonly git: Git) {
+    super();
+    this.#cwd = Deno.cwd();
     this.#args = args;
   }
 
@@ -53,17 +54,24 @@ export default class DenoTsStrategy implements BumpStrategy {
         if (this.FIND.test(line)) {
           const matches = this.FIND.exec(line);
           if (matches?.groups?.currentVersion) {
+            Deno.close(fileRef.rid);
             return matches.groups.currentVersion;
           }
         }
       }
+      Deno.close(fileRef.rid);
     } catch (e) {
       console.info(e);
     }
 
-    const tag = await this.#git.getLatestTag();
-    if (tag) return tag.indexOf('v') === 0 ? tag.slice(1).trim() : tag.trim();
-
-    throw new Deno.errors.NotFound('Cannot find version export in ' + file);
+    const tag = await this.git.getLatestTag(false);
+    if (tag) {
+      return tag.indexOf(args.versionPrefix) === 0
+        ? tag.slice(args.versionPrefix.length).trim()
+        : tag.trim();
+    }
+    throw new Deno.errors.NotFound(
+      'Cannot find version export in ' + file + 'or fallback git tags',
+    );
   }
 }

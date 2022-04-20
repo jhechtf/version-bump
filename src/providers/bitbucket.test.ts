@@ -1,4 +1,4 @@
-import { assertEquals } from 'deps';
+import { assertEquals } from '../../deps.ts';
 
 import BitbucketProvider from './bitbucket.com.ts';
 
