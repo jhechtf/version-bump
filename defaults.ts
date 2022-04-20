@@ -9,4 +9,5 @@ export const argDefaults = {
   versionPrefix: 'v',
   hostUrl: '',
   dryRun: false,
+  gitProvider: '',
 };

@@ -7,6 +7,8 @@ export { type Args, parse } from 'https://deno.land/std@0.132.0/flags/mod.ts';
 export {
   dirname,
   fromFileUrl,
+  join,
+  posix,
   resolve,
   toFileUrl,
 } from 'https://deno.land/std@0.132.0/path/mod.ts';

@@ -1,4 +1,4 @@
-import { GitProvider } from 'src/gitProvider.ts';
+import { GitProvider } from '../gitProvider.ts';
 
 export default class GitlabProvider implements GitProvider {
   constructor(public readonly url: URL) {

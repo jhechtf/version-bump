@@ -1,11 +1,11 @@
-import { ChangelogWriter } from 'src/changelogWriter.ts';
-import { Commit } from 'src/commit.ts';
-import { type Args, Injectable, readLines } from 'deps';
-import { capitalize, fileExists } from 'src/util.ts';
-import { GitProvider } from 'src/gitProvider.ts';
-import { Git } from 'src/git.ts';
-import { Cwd } from 'src/cwd.ts';
-import args, { VersionArgs } from '@/args.ts';
+import { ChangelogWriter } from '../changelogWriter.ts';
+import { Commit } from '../commit.ts';
+import { type Args, Injectable, readLines } from '../../deps.ts';
+import { capitalize, fileExists } from '../util.ts';
+import { GitProvider } from '../gitProvider.ts';
+import { Git } from '../git.ts';
+import { Cwd } from '../cwd.ts';
+import args, { VersionArgs } from '../../args.ts';
 
 @Injectable()
 export class DefaultWriter extends ChangelogWriter {

@@ -6,31 +6,33 @@ import {
   fromFileUrl,
   resolve,
   toFileUrl,
-} from 'deps';
+} from './deps.ts';
 
-import { fileExists } from 'src/util.ts';
+import { fileExists } from './src/util.ts';
 
-import { GitProviderBuildable, makeGitProvider } from 'src/gitProvider.ts';
+import { resolveFileImportUrl } from './src/util.ts';
+
+import { GitProviderBuildable, makeGitProvider } from './src/gitProvider.ts';
 import {
   VersionStrategy,
   VersionStrategyConstructable,
-} from 'src/versionStrategy.ts';
+} from './src/versionStrategy.ts';
 
-import { Git } from 'src/git.ts';
+import { Git } from './src/git.ts';
 
-import { DefaultWriter } from 'src/changelog/default.ts';
+import { DefaultWriter } from './src/changelog/default.ts';
 
-import { ChangelogWriter } from 'src/changelogWriter.ts';
+import { ChangelogWriter } from './src/changelogWriter.ts';
 
-import { GitConvention, GitConventionBuildable } from 'src/gitConvention.ts';
+import { GitConvention, GitConventionBuildable } from './src/gitConvention.ts';
 
-import AngularPreset from 'src/presets/angular.ts';
+import AngularPreset from './src/presets/angular.ts';
 
-import args, { VersionArgs } from '@/args.ts';
+import args, { VersionArgs } from './args.ts';
 
 import DenoTsStrategy from './src/strategies/deno.ts';
 
-import { Commit } from 'src/commit.ts';
+import { Commit } from './src/commit.ts';
 
 @Bootstrapped()
 export class VersionBumpCli {
@@ -88,11 +90,32 @@ export class VersionBumpCli {
       throw new Deno.errors.BadResource('Cannot parse git URL');
     }
 
-    const gitProvider = await import(
-      `src/providers/${parsedGitUrl.hostname.split(':')[0]}.ts`
-    )
-      .then((res) => (res.default || res) as GitProviderBuildable);
+    /**
+     * if the provider has been set, we just use it regardless*(for now)
+     * otherwise check if the provider is available through resolving our
+     * import.meta.url in combination with the pathname.
+     */
 
+    let providerArg = args.gitProvider;
+    let gitProvider: GitProviderBuildable;
+    console.info('PROVIDER', providerArg, providerArg.startsWith('file'));
+    // If the provider arg is not specified we try to find the values.
+    if (providerArg === '') {
+      providerArg = resolveFileImportUrl(
+        import.meta.url,
+        'src',
+        'providers',
+        `${parsedGitUrl.hostname}.ts`,
+      );
+    } else if (
+      !providerArg.startsWith('file') && !providerArg.startsWith('http')
+    ) {
+      const resolvedArg = resolve(providerArg);
+      providerArg = toFileUrl(resolvedArg).href;
+    }
+
+    gitProvider = await import(providerArg)
+      .then((res) => res.default as GitProviderBuildable);
     if (!gitProvider) {
       throw new Deno.errors.NotFound('Could not find git provider');
     }
@@ -130,7 +153,7 @@ export class VersionBumpCli {
 
     // Changelog.
     await this.changelogWriter.write(
-      './' + args.changelogPath,
+      resolve(args.changelogPath),
       bumpedVersion,
       commits,
     );
@@ -171,9 +194,7 @@ if (args.versionStrategy !== 'deno') {
       toFileUrl(resolve(execDir, `src/strategies/${args.versionStrategy}.ts`))
         .href
     )
-      .then((res) =>
-        (res.default || res) as unknown as VersionStrategyConstructable
-      );
+      .then((res) => res.default as VersionStrategyConstructable);
     overrides.set(VersionStrategy, importedVs);
   } else {
     let versionStrategy = args.versionStrategy;
@@ -188,9 +209,7 @@ if (args.versionStrategy !== 'deno') {
     }
 
     const importedVs = await import(versionStrategy)
-      .then((res) =>
-        (res.default || res) as unknown as VersionStrategyConstructable
-      );
+      .then((res) => res.default as VersionStrategyConstructable);
     // Doing this overrides the default deno import.
     if (importedVs) {
       overrides.set(VersionStrategy, importedVs);
@@ -200,14 +219,15 @@ if (args.versionStrategy !== 'deno') {
 
 // If we are using something that is not angular...
 if (args.preset !== 'angular') {
-  const { preset } = args;
-  if (!preset.startsWith('file://') || !preset.startsWith('https://')) {
-    throw new Deno.errors.NotSupported(
-      `You are trying to find an included Git convention that does not exist in the project (${preset})`,
-    );
+  let { preset } = args;
+  if (!preset.startsWith('file') && !preset.startsWith('http')) {
+    preset = toFileUrl(
+      resolve(preset),
+    ).hash;
   }
+
   const importedPreset = await import(preset)
-    .then((res) => (res.default || res) as unknown as GitConventionBuildable);
+    .then((res) => res.default as GitConventionBuildable);
 
   if (importedPreset) {
     overrides.set(GitConvention, importedPreset);

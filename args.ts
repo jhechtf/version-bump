@@ -1,4 +1,4 @@
-import { Args, Injectable, parse } from 'deps';
+import { Args, Injectable, parse } from './deps.ts';
 import { argDefaults } from './defaults.ts';
 /**
  * @description returns a parsed deno argument

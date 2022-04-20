@@ -1,6 +1,6 @@
-import { Args, Injectable } from 'deps';
+import { Args, Injectable } from '../deps.ts';
 
-import { Git } from 'src/git.ts';
+import { Git } from './git.ts';
 
 export interface VersionStrategy {
   /**

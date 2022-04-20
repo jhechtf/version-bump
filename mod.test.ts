@@ -1,9 +1,9 @@
-import { assertEquals, assertMatch, emptyDir } from 'deps';
+import { assertEquals, assertMatch, emptyDir } from './deps.ts';
 import cli from './cli.ts';
-import args from '@/args.ts';
+import args from './args.ts';
 
-import { runCommand } from 'src/util.ts';
-import { Commit } from 'src/commit.ts';
+import { runCommand } from './src/util.ts';
+import { Commit } from './src/commit.ts';
 
 const strategies = [
   'deno',

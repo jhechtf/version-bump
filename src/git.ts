@@ -1,4 +1,4 @@
-import { Args, Injectable } from 'deps';
+import { Args, Injectable } from '../deps.ts';
 import { Commit } from './commit.ts';
 import args, { VersionArgs } from '../args.ts';
 import { Cwd } from './cwd.ts';

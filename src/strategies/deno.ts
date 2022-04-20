@@ -1,7 +1,7 @@
-import { VersionStrategy } from 'src/versionStrategy.ts';
-import { Args, Injectable, readLines, resolve } from 'deps';
-import args from '@/args.ts';
-import { Git } from 'src/git.ts';
+import { VersionStrategy } from '../versionStrategy.ts';
+import { Args, Injectable, readLines, resolve } from '../../deps.ts';
+import args from '../../args.ts';
+import { Git } from '../git.ts';
 
 @Injectable()
 export default class DenoTsStrategy extends VersionStrategy {

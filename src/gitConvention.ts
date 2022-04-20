@@ -1,5 +1,5 @@
 import { Commit } from './commit.ts';
-import { Args, Injectable } from 'deps';
+import { Args, Injectable } from '../deps.ts';
 
 export interface CalculateBumpArgs {
   currentVersion: string;

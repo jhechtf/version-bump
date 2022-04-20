@@ -1,4 +1,4 @@
-import { assertEquals } from 'deps';
+import { assertEquals } from '../../deps.ts';
 
 export function assertObject<T>(actual: T, expected: T) {
   for (const [key, value] of Object.entries(expected)) {

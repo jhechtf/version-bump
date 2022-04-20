@@ -1,11 +1,11 @@
-import { VersionStrategy } from 'src/versionStrategy.ts';
+import { VersionStrategy } from '../versionStrategy.ts';
 
-import { fileExists } from 'src/util.ts';
+import { fileExists } from '../util.ts';
 
-import { Git } from 'src/git.ts';
+import { Git } from '../git.ts';
 
-import { Args, Injectable, readLines, resolve } from 'deps';
-import args from '@/args.ts';
+import { Args, Injectable, readLines, resolve } from '../../deps.ts';
+import args from '../../args.ts';
 
 @Injectable()
 export default class NodeStrategy extends VersionStrategy {

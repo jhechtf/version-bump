@@ -1,4 +1,4 @@
-import { Args, Injectable } from 'deps';
+import { Args, Injectable } from '../deps.ts';
 
 export interface GitProviderBuildable {
   new (url: URL): GitProvider;

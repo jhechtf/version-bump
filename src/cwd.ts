@@ -1,4 +1,4 @@
-import { Injectable } from 'deps';
+import { Injectable } from '../deps.ts';
 
 @Injectable({ isSingleton: true })
 export class Cwd {

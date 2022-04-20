@@ -1,6 +1,6 @@
 import GithubProvider from './github.com.ts';
 
-import { assertEquals } from 'deps';
+import { assertEquals } from '../../deps.ts';
 
 import { url } from './shared.data.ts';
 
