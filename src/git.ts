@@ -1,7 +1,6 @@
-import { Args, Injectable } from '../deps.ts';
+import { Args, inject, injectable } from '../deps.ts';
 import { Commit } from './commit.ts';
 import args, { VersionArgs } from '../args.ts';
-import { Cwd } from './cwd.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -14,11 +13,10 @@ interface CommandOutput {
 const WHOLE =
   /^(?:(?<proto>\w+):\/\/)?(?:(?<username>\w+)(?::(?<pass>.+))?@)?(?<host>.+?)(?::(?<port>\d+))?(:|\/)(?<path>.*)\.git$/m;
 
-@Injectable()
+@injectable()
 export class Git {
   prefix: string[] = [];
   #decoder = new TextDecoder();
-  #args: Args;
 
   static parseGitRemoteUrl(url: string): URL {
     const matches = url.match(WHOLE);
@@ -37,10 +35,9 @@ export class Git {
   }
 
   constructor(
-    public readonly vargs: VersionArgs,
-    public readonly cwd: Cwd,
+    @inject('args') public readonly vargs: Args,
+    @inject('cwd') public readonly cwd: string,
   ) {
-    this.#args = args;
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];
   }
 
@@ -181,7 +178,7 @@ export class Git {
         command,
         ...args,
       ]),
-      cwd: this.cwd.getCwd(),
+      cwd: this.cwd,
       stderr: 'piped',
       stdout: 'piped',
       stdin: 'null',
@@ -198,6 +195,7 @@ export class Git {
 
     cmd.close();
     cmd.stderr.close();
+
     return {
       stdout: this.#decoder.decode(await cmd.output()),
       code,

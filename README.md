@@ -136,6 +136,23 @@ Currently unused. Set it to whatever you want, it changes nothing!
 Whether or not this is a dry run. Setting to `true` will disable writing the
 updates to the files used by your VersionStrategy.
 
+### --logLevel
+
+**Default** `ERROR`
+
+This controls how much information you see about the inner workings of the
+Version Bump CLI. The levels are as followed, with each level including the
+levels below them:
+
+- DEBUG (most logging)
+- INFO
+- WARNING
+- ERROR
+- CRITICAL (least logging)
+
+Please see [the documentation](https://deno.land/std@0.132.0/log/) about the
+Deno Logger for more thorough information about logging levels.
+
 ## References
 
 This section has the references for building custom implementation of the inner
@@ -155,6 +172,35 @@ export class CustomChangelogWriter extends ChangelogWriter {
   // rest of code
 }
 ```
+
+### Injectables
+
+There are a few injectables that can be used in your code. These will have their
+given defaults, but will be determined at run-time for the CLI. They can be
+included by including them in the constructor in the case of classes, _OR_ by
+using the `inject` decorator for certain tokens.
+
+#### Classes
+
+These classes can be injected into your code by TSyringe so long as your class
+is correctly marked as `@injectable`.
+
+- `Git`
+
+#### Tokens
+
+These tokens can be registered in via the `@inject` decorator on a constructor.
+
+|  Token   |       Type       | Example                                                                 |
+| :------: | :--------------: | :---------------------------------------------------------------------- |
+|  `cwd`   |     `string`     | `constructor(@inject('cwd') public readonly cwd: string) {}`            |
+|  `args`  |      `Args`      | `constructor(@inject('args) public readonly args: Args) {}`             |
+| `logger` | `LoggerInstance` | `constructor(@inject('logger') public readonly log: LoggerInstance) {}` |
+
+**NOTE** The `LoggerInstance` type is an inferred type from an import. Work is
+in process to determine how best to wrap it into something more cohesive with
+the system, but for now it is fine to use as it adds level-based logging to the
+application.
 
 ### Making a Changelog Writer
 
@@ -180,26 +226,26 @@ description of purpose behind each of those methods.
 ```ts
 // CustomChangelogWriter.ts
 import {
+  type Args,
   ChangelogWriter,
   Commit,
-  Cwd,
   Git,
   GitProvider,
-  Injectable,
-  VersionArgs,
+  inject,
+  injectable,
 } from 'https://deno.land/x/version_bump/mod.ts';
 
-@Injectable()
+@injectable()
 export default class CustomChangelogWriter extends ChangelogWriter {
   // Needed to make the compiler happy.
   public provider: GitProvider = new GitProvider();
   /**
-   * Please note that the constructor does not have a given form -- it can use any of the [Injectables](#injectables) in the code base. The signature used for the default is given below for reference
+   * Please note that the constructor does not have a given form -- it can use any of the [injectables](#injectables) in the code base. The signature used for the default is given below for reference
    */
   constructor(
     public readonly git: Git,
-    public readonly cwd: Cwd,
-    public readonly args: VersionArgs,
+    @inject('cwd') public readonly cwd: string,
+    @inject('args') public readonly args: Args,
   ) {
     super();
   }
@@ -208,7 +254,7 @@ export default class CustomChangelogWriter extends ChangelogWriter {
     filePath: string,
     newVersion: string,
     commits: Commit[],
-  ): Promise<string> {
+  ): Promise<boolean> {
     /// implementation here
   }
 
@@ -221,6 +267,12 @@ export default class CustomChangelogWriter extends ChangelogWriter {
   }
 }
 ```
+
+**NOTE** Currently the `read()` method is not used, but this may change as the
+API stabilizes. There are considerations about turning into an async generator
+to determine where new contents need to be injected, so that all of that work
+doesn't need to be done via the `write()` method, however I am still mulling
+over possibilities.
 
 Then, when you call the file you would use it as follows
 
@@ -251,11 +303,11 @@ The `VersionStrategy` requires the following two methods:
 ```ts
 // CustomVersionStrategy.ts
 import {
-  Injectable,
+  injectable,
   VersionStrategy,
 } from 'https://deno.land/x/version_bump/mod.ts';
 
-@Injectable()
+@injectable()
 export default class CustomVersionStrategy extends VersionStrategy {
   bump(newVersion: string): Promise<boolean> {
     // Code here
@@ -296,7 +348,7 @@ can create your own. The GitProviders require the following methods:
 
 ```ts
 import { GitProvider } from 'https://deno.land/x/version_bump/mod.ts';
-// NOTE: This class should NOT be Injectable and it _should_ have a constructor that matches the one below.
+// NOTE: This class should NOT be injectable and it _should_ have a constructor that matches the one below.
 export default class CustomProvider extends GitProvider {
   constructor(url: URL) {}
   gitDiffUrl(from: string, to = 'HEAD'): string {
@@ -345,10 +397,10 @@ import {
   CalculateBumpArgs,
   GenerateCommitArgs,
   GitConvention,
-  Injectable,
+  injectable,
 } from 'https://deno.land/x/version_bump/mod.ts';
 
-@Injectable()
+@injectable()
 export default class CustomConvention extends GitConvention {
   calculateBump(args: CalculateBumpArgs): Promise<string> {
     // Code

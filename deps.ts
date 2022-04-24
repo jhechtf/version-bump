@@ -1,8 +1,28 @@
+import 'https://esm.sh/@abraham/reflection@0.10.0';
+
 export { green, red } from 'https://deno.land/std@0.132.0/fmt/colors.ts';
 
 export * as semver from 'https://deno.land/x/semver@v1.4.0/mod.ts';
 
 export { type Args, parse } from 'https://deno.land/std@0.132.0/flags/mod.ts';
+
+export {
+  container,
+  type DependencyContainer,
+  type FactoryFunction,
+  inject,
+  injectable,
+  injectAll,
+  predicateAwareClassFactory,
+  registry,
+  singleton,
+} from 'https://esm.sh/tsyringe@4.6.0';
+
+export {
+  bgGreen,
+  bgRed,
+  bgYellow,
+} from 'https://deno.land/std@0.132.0/fmt/colors.ts';
 
 export {
   dirname,
@@ -26,15 +46,5 @@ export {
   ensureDir,
   ensureFile,
 } from 'https://deno.land/std@0.132.0/fs/mod.ts';
-
-export {
-  bootstrap,
-  Bootstrapped,
-  Injectable,
-} from 'https://deno.land/x/inject@v0.1.2/mod.ts';
-
-export {
-  type Constructor,
-} from 'https://deno.land/x/inject@v0.1.2/helper_types.ts';
 
 export const VERSION = '0.1.1';
