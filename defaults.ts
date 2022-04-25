@@ -6,8 +6,9 @@ export const argDefaults = {
   changelogPath: 'CHANGELOG.md',
   baseVersion: false,
   firstRelease: false,
-  versionPrefix: 'v',
+  versionPrefix: '',
   hostUrl: '',
   dryRun: false,
   gitProvider: '',
+  logLevel: 'ERROR',
 };

@@ -1,24 +1,24 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-import { Args, Injectable, readLines, resolve } from '../../deps.ts';
+import { Args, inject, injectable, readLines, resolve } from '../../deps.ts';
 import args from '../../args.ts';
 import { Git } from '../git.ts';
 
-@Injectable()
+@injectable()
 export default class DenoTsStrategy extends VersionStrategy {
-  #cwd: string;
   FIND = /VERSION\s?(:|=)\s?('|")(?<currentVersion>.*?)\2(,|;)?/;
-  #args: Args;
 
-  constructor(private readonly git: Git) {
+  constructor(
+    private readonly git: Git,
+    @inject('cwd') public readonly cwd: string,
+    @inject('args') public readonly args: Args,
+  ) {
     super();
-    this.#cwd = Deno.cwd();
-    this.#args = args;
   }
 
   async bump(newVersion: string) {
     const content = await Deno.readTextFile(
       resolve(
-        this.#cwd,
+        this.cwd,
         'deps.ts',
       ),
     );
@@ -36,7 +36,7 @@ export default class DenoTsStrategy extends VersionStrategy {
 
     // Try to write the file
     try {
-      await Deno.writeTextFile(resolve(this.#cwd, 'deps.ts'), replaced);
+      await Deno.writeTextFile(resolve(this.cwd, 'deps.ts'), replaced);
       return true;
     } catch (e) {
       // Output the error and return false;
@@ -46,7 +46,7 @@ export default class DenoTsStrategy extends VersionStrategy {
   }
 
   async getCurrentVersion(): Promise<string> {
-    const file = resolve(this.#cwd, 'deps.ts');
+    const file = resolve(this.cwd, 'deps.ts');
     try {
       const fileRef = await Deno.open(file);
 

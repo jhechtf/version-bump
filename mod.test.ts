@@ -218,6 +218,7 @@ Deno.test('CLI Test', async (t) => {
       const packageContent = JSON.parse(
         await Deno.readTextFile('packages/github.com/node/package.json'),
       ) as any;
+
       assertEquals(
         packageContent.version,
         '0.2.0',
