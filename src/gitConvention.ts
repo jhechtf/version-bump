@@ -1,5 +1,5 @@
 import { Commit } from './commit.ts';
-import { Args, injectable } from '../deps.ts';
+import { type Args, injectable } from '../deps.ts';
 
 export interface CalculateBumpArgs {
   currentVersion: string;
@@ -33,8 +33,4 @@ export interface GitConventionBuildable {
 @injectable()
 export class GitConvention {
   // Class left empty on purpose do not directly use this class.
-}
-
-export function makePreset(pb: GitConventionBuildable, args: Args) {
-  return new pb(args);
 }

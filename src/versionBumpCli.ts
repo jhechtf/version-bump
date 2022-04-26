@@ -1,29 +1,29 @@
 import './cwd.ts';
 import {
-  Args,
+  type Args,
   bgGreen,
   bgRed,
   bgYellow,
   inject,
   injectable,
   resolve,
-  toFileUrl,
 } from '../deps.ts';
 import { VersionStrategy } from './versionStrategy.ts';
 import { Git } from './git.ts';
 import { Commit } from './commit.ts';
-import { GitProviderBuildable, makeGitProvider } from './gitProvider.ts';
-import { resolveFileImportUrl } from './util.ts';
+import { GitProvider } from './gitProvider.ts';
 import { ChangelogWriter } from './changelogWriter.ts';
 import { GitConvention } from './gitConvention.ts';
-import { LoggerInstance } from '../logger.ts';
+import { type LoggerInstance } from '../logger.ts';
+import { Runnable } from './runnable.ts';
 
 @injectable()
-export class VersionArgsCli {
+export class VersionArgsCli implements Runnable {
   constructor(
     @inject('cwd') public readonly cwd: string,
     @inject('args') public readonly args: Args,
     @inject('logger') public readonly log: LoggerInstance,
+    @inject('gitProvider') public readonly gitProvider: GitProvider,
     public readonly git: Git,
     public readonly versionStrategy: VersionStrategy,
     public readonly changelogWriter: ChangelogWriter,
@@ -56,56 +56,6 @@ export class VersionArgsCli {
       throw new Deno.errors.NotFound('No commits found');
     }
 
-    const {
-      stdout: gitRemote,
-    } = await this.git.remote();
-    // If we do not have a git remote, throw that error out.
-    if (!gitRemote) {
-      this.log.critical(gitRemote);
-      throw new Deno.errors.NotFound('Could not find Git remote URL');
-    }
-
-    // Parse the git remote
-    const parsedGitRemote = Git.parseGitRemoteUrl(gitRemote);
-    // If we don't have a parsed remote, throw. We can't do anything from here.
-
-    if (!parsedGitRemote) {
-      this.log.critical(parsedGitRemote);
-      throw new Deno.errors.BadResource('Cannot parse Git URL');
-    }
-
-    // Gotta do the provider shenanigans here too.
-    let providerArg = this.args.gitProvider;
-    let gitProvider: GitProviderBuildable;
-
-    // If the provider arg is not specified we try to find the values.
-    if (providerArg === '') {
-      providerArg = resolveFileImportUrl(
-        import.meta.url,
-        'providers',
-        `${parsedGitRemote.hostname}.ts`,
-      );
-    } else if (
-      !providerArg.startsWith('file') && !providerArg.startsWith('http')
-    ) {
-      providerArg = toFileUrl(
-        resolve(providerArg),
-      ).href;
-    }
-
-    gitProvider = await import(providerArg)
-      .then((res) => res.default as GitProviderBuildable);
-
-    if (!gitProvider) {
-      this.log.critical(gitProvider);
-      throw new Deno.errors.NotFound('Could not determine Git Provider');
-    }
-
-    // Set the changelog writer in the version
-    this.changelogWriter.setGitProvider(
-      makeGitProvider(gitProvider, parsedGitRemote),
-    );
-
     // calculate the bumped version
     const bumpedVersion = await this.gitConvention.calculateBump({
       args: this.args,
@@ -137,8 +87,11 @@ export class VersionArgsCli {
       this.versionStrategy.bump(bumpedVersion),
       this.changelogWriter.write(
         resolve(this.args.changelogPath),
-        bumpedVersion,
-        commits,
+        await this.changelogWriter.generateChangelogEntry(
+          bumpedVersion,
+          currentVersion,
+          commits,
+        ),
       ),
     ]);
 
@@ -169,5 +122,6 @@ export class VersionArgsCli {
 
     console.info('Please push your changes with the following command');
     console.info('git push origin && git push origin --tags');
+    return 0;
   }
 }

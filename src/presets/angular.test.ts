@@ -11,6 +11,7 @@ Deno.test('Breaking Changes', async () => {
       author: 'User',
       body: 'BREAKING: we did the thing',
       sha: '123',
+      tag: '',
     }],
     args: {
       _: [],
@@ -32,16 +33,19 @@ Deno.test('Minor version changes', async () => {
         subject: 'fix: Testing',
         author: 'User 2',
         sha: '123',
+        tag: '',
       },
       {
         subject: 'fix: Test 1',
         author: 'User',
         sha: '345',
+        tag: '',
       },
       {
         subject: 'feat: Test 2',
         author: 'User 2',
         sha: '1234',
+        tag: '',
       },
     ],
     args: {
@@ -64,17 +68,20 @@ Deno.test('Patch version change', async () => {
         subject: 'fix: Testing',
         author: 'User',
         sha: '123',
+        tag: '',
       },
       {
         subject: 'fix: Other fix',
         author: 'User 3',
         sha: '456',
+        tag: '',
       },
       {
         subject: 'fix: other other thing.',
         author: 'Test',
         body: 'This is just some random information.',
         sha: 'ksdfj',
+        tag: '',
       },
     ],
     args: {

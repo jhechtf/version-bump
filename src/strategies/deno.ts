@@ -1,5 +1,11 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-import { Args, inject, injectable, readLines, resolve } from '../../deps.ts';
+import {
+  type Args,
+  inject,
+  injectable,
+  readLines,
+  resolve,
+} from '../../deps.ts';
 import args from '../../args.ts';
 import { Git } from '../git.ts';
 

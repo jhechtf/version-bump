@@ -1,26 +1,30 @@
 import { type Args, container, resolve, toFileUrl } from './deps.ts';
-
 import AngularGitConvention from './src/presets/angular.ts';
 import { DefaultWriter } from './src/changelog/default.ts';
 import {
   ChangelogWriter,
   ChangelogWriterBuldable,
 } from './src/changelogWriter.ts';
-
 import {
   VersionStrategy,
   VersionStrategyConstructable,
 } from './src/versionStrategy.ts';
 import DenoTsStrategy from './src/strategies/deno.ts';
 import { GitConvention, GitConventionBuildable } from './src/gitConvention.ts';
-
+import { Git } from './src/git.ts';
 import { resolveFileImportUrl } from './src/util.ts';
+import {
+  GitProvider,
+  GitProviderBuildable,
+  makeGitProvider,
+} from './src/gitProvider.ts';
 
 import './args.ts';
 import './src/cwd.ts';
-import './logger.ts';
+import log from './logger.ts';
 
 import { VersionArgsCli } from './src/versionBumpCli.ts';
+import HistoricCli from './src/historic.ts';
 
 // Grab the args
 const args = container.resolve<Args>('args');
@@ -92,6 +96,56 @@ if (args.versionStrategy === 'node') {
   });
 }
 
+const git = container.resolve(Git);
+
+const { stdout: gitRemote } = await git.remote();
+
+if (!gitRemote) {
+  log.critical('Invalid Git Remote', gitRemote);
+  throw new Deno.errors.NotFound('Could not find Git remote URL');
+}
+const parsedGitRemote = Git.parseGitRemoteUrl(gitRemote.trim());
+
+// Gotta do the provider shenanigans here too.
+let providerArg = args.gitProvider;
+
+// If the provider arg is not specified we try to find the values.
+if (providerArg === '') {
+  providerArg = resolveFileImportUrl(
+    import.meta.url,
+    'src',
+    'providers',
+    `${parsedGitRemote.hostname}.ts`,
+  );
+} else if (
+  !providerArg.startsWith('file') && !providerArg.startsWith('http')
+) {
+  providerArg = toFileUrl(
+    resolve(providerArg),
+  ).href;
+}
+
+const gitProvider = await import(providerArg)
+  .then((res) => res.default as GitProviderBuildable);
+
+if (!gitProvider) {
+  log.critical(gitProvider);
+  throw new Deno.errors.NotFound('Could not determine Git Provider');
+}
+
+// Register the gitProvider
+container.register<GitProvider>('gitProvider', {
+  useValue: makeGitProvider(gitProvider, parsedGitRemote),
+});
+
+// If this is a historic run.
+if (args.historic) {
+  const historicCommand = container.resolve(HistoricCli);
+  await historicCommand.run();
+  Deno.exit();
+}
+
+// Resolve the CLI
 const cli = container.resolve(VersionArgsCli);
 
 export default cli;

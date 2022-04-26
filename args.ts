@@ -1,5 +1,6 @@
-import { Args, container, injectable, parse } from './deps.ts';
+import { type Args, container, parse } from './deps.ts';
 import { argDefaults } from './defaults.ts';
+
 /**
  * @description returns a parsed deno argument
  */
@@ -9,14 +10,9 @@ const parsed = parse(Deno.args, {
     allowEmpty: 'allow-empty',
   },
   string: ['release-as', 'allow-empty'],
-  boolean: ['dryRun'],
+  boolean: ['dryRun', 'historic', 'retag', 'y'],
   default: argDefaults,
 });
-
-@injectable()
-export class VersionArgs {
-  args: Args = parsed;
-}
 
 container.register<Args>('args', { useValue: parsed });
 

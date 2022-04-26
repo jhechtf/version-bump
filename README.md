@@ -136,6 +136,25 @@ Currently unused. Set it to whatever you want, it changes nothing!
 Whether or not this is a dry run. Setting to `true` will disable writing the
 updates to the files used by your VersionStrategy.
 
+### --historic
+
+**Default** `false`
+
+Should this be a _historic_ run? A historic run differs a bit between a regular
+run in one main way:
+
+_Historic runs go through all commits, and attempt to use the current convention
+to build a CHANGELOG starting from the very beginning of the packages Git
+history_. Regular runs only work in the last batch of commits, and work to
+progress the project one group of commits at a time.
+
+This is a good flag to run if you are, say, moving from using one version prefix
+to another. For example, if you were originally using the `--versionPrefix`
+argument of `v`, but no longer wish to append `v` to your calculated version,
+run this command with the version prefix you would like to use. It will not
+re-tag the old commits, but it will create a good CHANGELOG with appropriate
+diff URLs.
+
 ### --logLevel
 
 **Default** `ERROR`
@@ -207,19 +226,17 @@ application.
 To make a `ChangelogWriter` you will need to import the base `ChangelogWriter`
 class.
 
-This will ask for 3 methods to be available on the class. Below is a quick
+This will ask for 2 methods to be available on the class. Below is a quick
 description of purpose behind each of those methods.
 
-- `write(filePath: string, newVersion: string, commits: Commit): Promise<boolean>`
-  &ndash; Takes the filePath (determined at runtime), the new version based on
-  the chosen `GitConvention`, and the commits between this commit and the last
-  one. It is up to you to determine.
-- `read(filePath: string): Promise<string>` &ndash; Reads through the contents
-  of the given filepath. returns a Promise that resolves to a string.
-- `setGitProvider(provider: GitProvider): void` &ndash; Sets the internal git
-  provider based on the git remote URL of the repository. This will happen at
-  runtime and this value should be used when writing your changelog to ensure
-  that the links are formatted correctly.
+- `write(filePath: string, newContent: string): Promise<boolean>` &ndash; Takes
+  the filePath (determined at runtime), the new content based on the value
+  returned from chosen `generateChangelogEntry`
+- `generateChangelogEntry(newVersion: string, previousVersion: string,commits: Commit[]):`
+  &ndash; Generates the actual entry that will be written in the CHANGELOG file
+  for the given `newVersion` (calculated by the `GitConvention`),
+  `previousVersion` (gathered by the `VersionStrategy`, and the commits,
+  gathered by any relevant CLI tool (and the `Git` class))
 
 #### Usage
 
@@ -243,36 +260,30 @@ export default class CustomChangelogWriter extends ChangelogWriter {
    * Please note that the constructor does not have a given form -- it can use any of the [injectables](#injectables) in the code base. The signature used for the default is given below for reference
    */
   constructor(
-    public readonly git: Git,
-    @inject('cwd') public readonly cwd: string,
+    @inject('gitProvider') public readonly gitProvider: GitProvider,
     @inject('args') public readonly args: Args,
+    @inject('logger') public readonly log: LoggerInstance,
+    public readonly git: Git,
   ) {
     super();
   }
 
   async write(
     filePath: string,
-    newVersion: string,
-    commits: Commit[],
+    newContent: string,
   ): Promise<boolean> {
     /// implementation here
   }
 
-  async read(filePath: string): Promise<string> {
-    /// implementation here.
-  }
-
-  setGitProvider(provider: GitProvider): void {
-    this.provider = provider;
+  generateChangelogEntry(
+    newVersion: string,
+    previousVersion: string,
+    commits: Commit[],
+  ): Promise<string> {
+    /// Implementation here.
   }
 }
 ```
-
-**NOTE** Currently the `read()` method is not used, but this may change as the
-API stabilizes. There are considerations about turning into an async generator
-to determine where new contents need to be injected, so that all of that work
-doesn't need to be done via the `write()` method, however I am still mulling
-over possibilities.
 
 Then, when you call the file you would use it as follows
 

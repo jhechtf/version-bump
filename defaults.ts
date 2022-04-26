@@ -11,4 +11,7 @@ export const argDefaults = {
   dryRun: false,
   gitProvider: '',
   logLevel: 'ERROR',
+  // Below this pertains to historic Changelog builds
+  historic: false,
+  retag: true,
 };

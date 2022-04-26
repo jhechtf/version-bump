@@ -3,4 +3,5 @@ export interface Commit {
   author: string;
   subject: string;
   body?: string;
+  tag: string;
 }

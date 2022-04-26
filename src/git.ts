@@ -1,6 +1,5 @@
-import { Args, inject, injectable } from '../deps.ts';
+import { type Args, inject, injectable } from '../deps.ts';
 import { Commit } from './commit.ts';
-import args, { VersionArgs } from '../args.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -55,7 +54,7 @@ export class Git {
   async logs(from?: string, to = 'HEAD'): Promise<Commit[]> {
     const { code, stdout, stderr } = await this.run(
       'log',
-      `--format=subject:::%s;;;author:::%aN;;;sha:::%H;;;body:::%b${COMMIT_DELIMITER}`,
+      `--format=subject:::%s;;;author:::%aN;;;sha:::%H;;;tag:::%D;;;body:::%b${COMMIT_DELIMITER}`,
       from ? [from, to].join('..') : to,
     );
 
@@ -71,6 +70,16 @@ export class Git {
           const parts = commit.split(';;;');
           return parts.reduce((cum, cur) => {
             const [key, value] = cur.split(':::');
+            if (key === 'tag') {
+              if (/tag:/.test(value)) {
+                cum[key] = value.replaceAll('tag: ', '').trim();
+                return cum;
+              } else {
+                cum[key] = '';
+                return cum;
+              }
+            }
+
             cum[key] = value?.trim();
             return cum;
           }, {} as Record<string, string>);
@@ -104,8 +113,17 @@ export class Git {
    * @param version the version to tag.
    * @returns true if successful, throws an error otherwise.
    */
-  async tag(version: string): Promise<boolean> {
-    const { code, stderr } = await this.run('tag', version);
+  async tag(version: string, commit?: string): Promise<boolean> {
+    const args = [version];
+
+    if (commit) {
+      args.push(commit);
+    }
+
+    const { code, stderr } = await this.run(
+      'tag',
+      ...args,
+    );
 
     if (code !== 0) {
       throw Error(stderr);
