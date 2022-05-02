@@ -39,6 +39,8 @@ export {
   assertEquals,
   assertMatch,
   assertObjectMatch,
+  assertRejects,
+  assertThrows,
 } from 'https://deno.land/std@0.132.0/testing/asserts.ts';
 
 export {

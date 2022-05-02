@@ -145,7 +145,7 @@ Deno.test('CLI Test', async (t) => {
   await t.step({
     name: 'Deno Preset',
     fn: async () => {
-      const output = await runCommand('deno', [
+      await runCommand('deno', [
         'run',
         '-A',
         '../../../cli.ts',
@@ -186,7 +186,7 @@ Deno.test('CLI Test', async (t) => {
   await t.step({
     name: 'Testing Node Preset',
     fn: async () => {
-      const output = await runCommand('deno', [
+      await runCommand('deno', [
         'run',
         '-A',
         '../../../cli.ts',
@@ -230,7 +230,7 @@ Deno.test('CLI Test', async (t) => {
   await t.step({
     name: 'Historic Test',
     fn: async () => {
-      const output = await runCommand(
+      await runCommand(
         'deno',
         [
           'run',

@@ -59,7 +59,7 @@ export class Git {
     );
 
     if (code !== 0) {
-      throw Error(stderr);
+      throw new Error(stderr);
     }
 
     if (stdout) {
@@ -71,11 +71,16 @@ export class Git {
           return parts.reduce((cum, cur) => {
             const [key, value] = cur.split(':::');
             if (key === 'tag') {
+              cum[key] = '';
+              // Todo: clean this up because like.. YIKES
               if (/tag:/.test(value)) {
-                cum[key] = value.replaceAll('tag: ', '').trim();
+                const tag = value.split(', ').find((tValue) =>
+                  tValue.startsWith('tag: ')
+                );
+
+                cum[key] = tag!.replace('tag: ', '');
                 return cum;
               } else {
-                cum[key] = '';
                 return cum;
               }
             }
@@ -86,7 +91,6 @@ export class Git {
         });
       return items as unknown as Commit[];
     }
-
     return [];
   }
 
@@ -94,16 +98,17 @@ export class Git {
    * @param msg the commit message.
    * @returns true if successful, throws error otherwise
    */
-  async commit(msg: string): Promise<boolean> {
+  async commit(msg: string, allowEmpty = false): Promise<boolean> {
+    const args = ['-m', msg.replace('"', '\\"')];
+    if (allowEmpty) args.push('--allow-empty');
     const { code, stderr } = await this.run(
       'commit',
-      '-m',
-      msg.replaceAll('"', '\\"'),
+      ...args,
     );
 
     if (code !== 0) {
       const error = stderr;
-      throw Error(error);
+      throw new Error(error);
     }
 
     return true;
@@ -126,7 +131,7 @@ export class Git {
     );
 
     if (code !== 0) {
-      throw Error(stderr);
+      throw new Error(stderr);
     }
 
     return true;
@@ -153,7 +158,7 @@ export class Git {
       return stderr ?? '';
     }
     if (stdout) {
-      return stdout;
+      return stdout.trim();
     }
 
     return '';
@@ -164,8 +169,13 @@ export class Git {
    * @returns True if command code is 0, false otherwise.
    */
   async tagExists(tag: string): Promise<boolean> {
-    const rev = await this.revParse(tag);
-    return rev.code === 0;
+    try {
+      const rev = await this.revParse(tag);
+      return rev.code === 0;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
   }
 
   /**
@@ -176,11 +186,16 @@ export class Git {
     return this.run('rev-parse', rev);
   }
 
-  remote(action = 'get-url', remote = 'origin'): Promise<CommandOutput> {
+  remote(
+    action = 'get-url',
+    remote = 'origin',
+    ...args: string[]
+  ): Promise<CommandOutput> {
     return this.run(
       'remote',
       action,
       remote,
+      ...args,
     );
   }
 
@@ -203,19 +218,18 @@ export class Git {
     });
     const { code } = await cmd.status();
 
+    const output = await cmd.output();
+    const errout = await cmd.stderrOutput();
+    cmd.close();
     if (code !== 0) {
-      cmd.close();
       return {
-        stderr: this.#decoder.decode(await cmd.stderrOutput()),
+        stderr: this.#decoder.decode(errout),
         code,
       };
     }
 
-    cmd.close();
-    cmd.stderr.close();
-
     return {
-      stdout: this.#decoder.decode(await cmd.output()),
+      stdout: this.#decoder.decode(output),
       code,
     };
   }
