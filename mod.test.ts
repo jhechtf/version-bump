@@ -9,6 +9,7 @@ const strategies = [
   'deno',
   'node',
   'historic',
+  'multiple-changelog-runs',
 ];
 
 type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
@@ -273,6 +274,79 @@ Deno.test('CLI Test', async (t) => {
         /VERSION = "0\.2\.0"/,
       );
     },
+  });
+
+  await t.step('Multiple Deno Runs', async () => {
+    // Run the first time and ensure that everything is there...
+    await runCommand(
+      'deno',
+      [
+        'run',
+        '-A',
+        '../../../cli.ts',
+        '--versionStrategy',
+        'node',
+      ],
+      'packages/github.com/multiple-changelog-runs',
+    );
+
+    let currentChangelogContents = await Deno.readTextFile(
+      'packages/github.com/multiple-changelog-runs/CHANGELOG.md',
+    );
+
+    assertMatch(
+      currentChangelogContents,
+      /## \[0\.2\.0\]/,
+    );
+
+    assertMatch(
+      currentChangelogContents,
+      /### Features/,
+    );
+
+    // Add more commits and run the command again.
+    await runCommand(
+      'git',
+      [
+        'commit',
+        '-m',
+        'fix: extra commit',
+        '--allow-empty',
+      ],
+      'packages/github.com/multiple-changelog-runs',
+    );
+
+    await runCommand(
+      'deno',
+      [
+        'run',
+        '-A',
+        '../../../cli.ts',
+        '--versionStrategy',
+        'node',
+      ],
+      'packages/github.com/multiple-changelog-runs',
+    );
+
+    currentChangelogContents = await Deno.readTextFile(
+      'packages/github.com/multiple-changelog-runs/CHANGELOG.md',
+    );
+
+    // Assert the old content is still there...
+    assertMatch(
+      currentChangelogContents,
+      /## \[0\.2\.1\]/,
+    );
+
+    assertMatch(
+      currentChangelogContents,
+      /## \[0\.2\.1\]/,
+    );
+
+    assertMatch(
+      currentChangelogContents,
+      /### Bug Fixes/,
+    );
   });
 
   // Remove the packages if we aren't skipping teardown to do an inspection of
