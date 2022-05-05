@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: denoland/setup-deno@v1
-      - run: deno test -A
+      - run: deno test -A --no-check
   format:
     runs-on: ubuntu-latest
     steps:
