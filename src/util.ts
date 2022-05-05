@@ -59,7 +59,7 @@ export async function runCommand(
   cwd = Deno.cwd(),
 ): Promise<{ code: number; stdout: string }> {
   const prefix = Deno.build.os === 'windows' ? ['cmd', '/c'] : [];
-  const commandRun = await Deno.run({
+  const commandRun = Deno.run({
     cmd: prefix.concat([
       command,
       ...args,
@@ -74,12 +74,10 @@ export async function runCommand(
   const { code } = await commandRun.status();
   const errorOutput = decoder.decode(await commandRun.stderrOutput());
   const output = decoder.decode(await commandRun.output());
-
-  if (code !== 0) {
-    throw Error(errorOutput);
-  }
-
   commandRun.close();
+  if (code !== 0) {
+    throw new Error(errorOutput);
+  }
 
   return {
     stdout: output,
