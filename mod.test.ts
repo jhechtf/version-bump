@@ -1,4 +1,4 @@
-import { assertEquals, assertMatch, emptyDir } from './deps.ts';
+import { assertEquals, assertMatch, emptyDir, assertRejects } from './deps.ts';
 import cli from './cli.ts';
 import args from './args.ts';
 
@@ -123,6 +123,34 @@ async function setupTestingEnv(): Promise<void> {
       );
     }
   }
+
+  // No Tags
+  await emptyDir('packages/github.com/no-tags');
+  await writeGitHistory(
+    'packages/github.com/no-tags',
+    'ssh://github.com:user/some-repo.git',
+    {
+      username: GIT_USERNAME,
+      email: GIT_EMAIL,
+    },
+    commitMap.map((v) => ({
+      ...v,
+      tag: undefined,
+    })),
+  );
+  // No Git History
+  await emptyDir('packages/github.com/no-extra-commit');
+  await writeGitHistory(
+    'packages/github.com/no-extra-commit',
+    'ssh://github.com:user/some-repo.git',
+    { username: GIT_USERNAME, email: GIT_EMAIL },
+    [
+      {
+        subject: 'chore(release): 0.1.0',
+        tag: '0.1.0'
+      }
+    ],
+  );
 }
 
 async function tearDown() {
@@ -347,6 +375,39 @@ Deno.test('CLI Test', async (t) => {
       currentChangelogContents,
       /### Bug Fixes/,
     );
+  });
+
+  await t.step('No Tags test', async () => {
+    await runCommand(
+      'deno',
+      [
+        'run',
+        '-A',
+        '../../../cli.ts',
+      ],
+      'packages/github.com/no-tags',
+    );
+
+    const changelogContent = await Deno.readTextFile(
+      'packages/github.com/no-tags/CHANGELOG.md',
+    );
+
+    assertMatch(
+      changelogContent,
+      /## \[0\.2\.0\]\(.*0\.1\.0\.\.0\.2\.0\)/,
+    );
+
+    const depsFile = await Deno.readTextFile(
+      'packages/github.com/no-tags/deps.ts',
+    );
+    assertMatch(
+      depsFile,
+      /const VERSION = "0\.2\.0"/,
+    );
+  });
+
+  await t.step('No Extra Commits', async () => {
+    await assertRejects(() => runCommand('deno', ['run', '-A', '../../../cli.ts'], 'packages/github.com/no-extra-commit'), Error);
   });
 
   // Remove the packages if we aren't skipping teardown to do an inspection of
