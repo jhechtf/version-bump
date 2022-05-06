@@ -1,4 +1,9 @@
-import { capitalize, fileExists, resolveFileImportUrl, runCommand } from './util.ts';
+import {
+  capitalize,
+  fileExists,
+  resolveFileImportUrl,
+  runCommand,
+} from './util.ts';
 
 import { assertEquals, assertRejects, assertThrows } from '../deps.ts';
 
@@ -70,9 +75,9 @@ Deno.test('Resolve file url', () => {
     'https://deno.land/x/version_bump@0.1.0/src/providers/github.com.ts',
   );
 
-  assertThrows(() => resolveFileImportUrl.call(null, 1, 2, 3 ));
+  assertThrows(() => resolveFileImportUrl.call(null, 1, 2, 3));
 });
 
 Deno.test('runCommand utilitiy', async () => {
   await assertRejects(() => runCommand('ls', ['not-gonna-find-this']));
-})
+});
