@@ -5,7 +5,7 @@ import {
   assertRejects,
   emptyDir,
 } from './deps.ts';
-import cli from './cli.ts';
+import _cli from './cli.ts';
 import args from './args.ts';
 
 import { runCommand } from './src/util.ts';
@@ -24,8 +24,6 @@ type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
 
 const GIT_USERNAME = 'Testing';
 const GIT_EMAIL = 'testing@email.com';
-
-const basePackageDir = 'packages';
 
 async function writeGitHistory(
   dir: string,

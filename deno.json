@@ -5,7 +5,8 @@
     }
   },
   "tasks": {
-    "test": "deno test -A"
+    "test": "deno test -A",
+    "test-coverage": "deno test -A --no-check --coverage=coverage && deno coverage --lcov --output=lcov.info coverage && code-coverage"
   },
   "compilerOptions": {
     "experimentalDecorators": true,
