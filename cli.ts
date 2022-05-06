@@ -31,7 +31,7 @@ const args = container.resolve<Args>('args');
 
 if (args.preset !== 'angular') {
   let { preset } = args;
-  if (!preset.startsWith('file') && !preset.startsWith('http')) {
+  if (!preset.startsWith('file://') && !preset.startsWith('http')) {
     preset = toFileUrl(resolve(preset)).href;
   }
 

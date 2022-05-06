@@ -1,4 +1,10 @@
-import { assertEquals, assertMatch, emptyDir, assertRejects } from './deps.ts';
+import {
+  assertEquals,
+  assertMatch,
+  assertNotEquals,
+  assertRejects,
+  emptyDir,
+} from './deps.ts';
 import cli from './cli.ts';
 import args from './args.ts';
 
@@ -147,8 +153,21 @@ async function setupTestingEnv(): Promise<void> {
     [
       {
         subject: 'chore(release): 0.1.0',
-        tag: '0.1.0'
-      }
+        tag: '0.1.0',
+      },
+    ],
+  );
+
+  // Full Custom
+  await emptyDir('packages/github.com/full-custom');
+  await writeGitHistory(
+    'packages/github.com/full-custom',
+    'ssh://github.com:user/some-repo.git',
+    { username: GIT_USERNAME, email: GIT_EMAIL },
+    [
+      {
+        subject: 'hello',
+      },
     ],
   );
 }
@@ -407,7 +426,59 @@ Deno.test('CLI Test', async (t) => {
   });
 
   await t.step('No Extra Commits', async () => {
-    await assertRejects(() => runCommand('deno', ['run', '-A', '../../../cli.ts'], 'packages/github.com/no-extra-commit'), Error);
+    await assertRejects(
+      () =>
+        runCommand(
+          'deno',
+          ['run', '-A', '../../../cli.ts'],
+          'packages/github.com/no-extra-commit',
+        ),
+      Error,
+    );
+  });
+
+  await t.step('Full Custom', async () => {
+    /**
+     * Guns-a-blazing, let's custom do _everything_.
+     */
+    await runCommand(
+      'deno',
+      [
+        'run',
+        '-A',
+        '../../../cli.ts',
+        '--versionStrategy',
+        '../../../src/testdata/testVersionStrategy.ts',
+        '--preset',
+        '../../../src/testdata/testGitConvention.ts',
+        '--changelogWriter',
+        '../../../src/testdata/testChangelogWriter.ts',
+        '--gitProvider',
+        '../../../src/testdata/testGitProvider.ts',
+      ],
+      'packages/github.com/full-custom',
+    );
+
+    // Grab contents of relevant items.
+    const versionInfo = await Deno.readTextFile(
+      'packages/github.com/full-custom/.version',
+    ).catch(() => '');
+    const changelog = await Deno.readTextFile(
+      'packages/github.com/full-custom/CHANGELOG.md',
+    ).catch(() => '');
+
+    assertNotEquals(versionInfo, '');
+    assertNotEquals(changelog, '');
+
+    assertEquals(versionInfo, '1');
+    assertMatch(
+      changelog,
+      /## 1 \(https:\/\/custom-domain-name\.com\/repo\/0\.1\.0\.\.1\)/,
+    );
+    assertMatch(
+      changelog,
+      /hello \- https:\/\/custom-domain-name\.com\/repo\/\-\/[a-z0-9]+/,
+    );
   });
 
   // Remove the packages if we aren't skipping teardown to do an inspection of

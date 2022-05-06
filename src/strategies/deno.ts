@@ -27,11 +27,10 @@ export default class DenoTsStrategy extends VersionStrategy {
         this.cwd,
         'deps.ts',
       ),
-    ).catch(e => {
-      if(e instanceof Deno.errors.NotFound) {
+    ).catch((e) => {
+      if (e instanceof Deno.errors.NotFound) {
         return '';
-      }
-      else throw e;
+      } else throw e;
     });
 
     let replaced: string;

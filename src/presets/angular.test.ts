@@ -1,5 +1,8 @@
 import AngularPreset from './angular.ts';
-import { assertEquals } from 'https://deno.land/std@0.132.0/testing/asserts.ts';
+import {
+  assertEquals,
+  assertThrows,
+} from 'https://deno.land/std@0.132.0/testing/asserts.ts';
 
 const preset = new AngularPreset();
 Deno.test('Breaking Changes', async () => {
@@ -92,5 +95,59 @@ Deno.test('Patch version change', async () => {
   assertEquals(
     versionbump,
     '1.0.1',
+  );
+});
+
+Deno.test('Release As test', async () => {
+  let bump = await preset.calculateBump({
+    currentVersion: '0.1.0',
+    commits: [{
+      subject: 'feat: new thing',
+      body: 'BREAKING: we fixed it',
+      author: 'Testing',
+      tag: '',
+      sha: '',
+    }],
+    args: {
+      _: [],
+      releaseAs: '0.2.0',
+    },
+  });
+
+  assertEquals(
+    bump,
+    '0.2.0',
+  );
+
+  bump = await preset.calculateBump({
+    currentVersion: '0.1.0',
+    commits: [
+      {
+        subject: 'feat: new thing',
+        body: 'BREAKING: we fixed it',
+        author: 'Testing',
+        tag: '',
+        sha: '',
+      },
+    ],
+    args: {
+      _: [],
+      firstRelease: true,
+    },
+  });
+
+  assertEquals(
+    bump,
+    '0.1.0',
+  );
+
+  assertThrows(() =>
+    preset.calculateBump({
+      currentVersion: 'waffle fries',
+      commits: [],
+      args: {
+        _: [],
+      },
+    })
   );
 });

@@ -17,7 +17,7 @@ export default class AngularPreset extends GitConvention {
   }: CalculateBumpArgs) {
     if (releaseAs || firstRelease) return releaseAs || currentVersion;
     const v = semver.parse(currentVersion);
-    if (!v) throw Error(`Cannot parse current version ${currentVersion}`);
+    if (!v) throw new Error(`Cannot parse current version ${currentVersion}`);
 
     const bumps = {
       major: false,
