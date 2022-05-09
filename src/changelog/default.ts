@@ -15,7 +15,7 @@ export class DefaultWriter extends ChangelogWriter {
     @inject('gitProvider') public readonly gitProvider: GitProvider,
     @inject('args') public readonly args: Args,
     @inject('logger') public readonly log: LoggerInstance,
-    public readonly git: Git,
+    @inject(Git) public readonly git: Git,
   ) {
     super();
   }

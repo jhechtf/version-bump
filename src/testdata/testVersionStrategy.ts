@@ -18,6 +18,7 @@ export default class TestVersionStrategy extends VersionStrategy {
       return false;
     }
   }
+
   async getCurrentVersion() {
     const current = await Deno.readTextFile(resolve(this.cwd, '.version'))
       .catch(() => '');

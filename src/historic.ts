@@ -19,10 +19,10 @@ export default class HistoricCli implements Runnable {
     @inject('cwd') public readonly cwd: string,
     @inject('args') public readonly args: Args,
     @inject('logger') public readonly log: LoggerInstance,
-    public readonly git: Git,
-    public readonly changelogWriter: ChangelogWriter,
-    public readonly versionStrategy: VersionStrategy,
-    public readonly gitConvention: GitConvention,
+    @inject(Git) public readonly git: Git,
+    @inject(ChangelogWriter) public readonly changelogWriter: ChangelogWriter,
+    @inject(VersionStrategy) public readonly versionStrategy: VersionStrategy,
+    @inject(GitConvention) public readonly gitConvention: GitConvention,
   ) {
   }
 
