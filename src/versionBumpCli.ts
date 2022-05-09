@@ -24,12 +24,13 @@ export class VersionArgsCli implements Runnable {
     @inject('args') public readonly args: Args,
     @inject('logger') public readonly log: LoggerInstance,
     @inject('gitProvider') public readonly gitProvider: GitProvider,
-    public readonly git: Git,
-    public readonly versionStrategy: VersionStrategy,
-    public readonly changelogWriter: ChangelogWriter,
-    public readonly gitConvention: GitConvention,
+    @inject(Git) public readonly git: Git,
+    @inject(VersionStrategy) public readonly versionStrategy: VersionStrategy,
+    @inject(ChangelogWriter) public readonly changelogWriter: ChangelogWriter,
+    @inject(GitConvention) public readonly gitConvention: GitConvention,
   ) {}
   async run() {
+    this.log.debug(() => this);
     // Code needed to run this bitch here.
     // 1. Grab the current version
     let currentVersion = await this.versionStrategy.getCurrentVersion();
@@ -48,6 +49,7 @@ export class VersionArgsCli implements Runnable {
       currentVersion = '0.1.0';
       commits = await this.git.logs();
     }
+
     this.log.info('COMMITS', commits, this.args.allowEmpty);
 
     // If we do not have any commits, and we are not allowing empty versions, throw errors.
@@ -111,9 +113,11 @@ export class VersionArgsCli implements Runnable {
     // Add the changes to the current commit
     this.log.info('Adding commits...');
     await this.git.add();
+
     // Make the current release commit
     this.log.info('Release commit');
     await this.git.commit(releaseCommit);
+
     // Tag the version
     this.log.info('Tagging version');
     await this.git.tag(`${this.args.versionPrefix}${bumpedVersion}`);

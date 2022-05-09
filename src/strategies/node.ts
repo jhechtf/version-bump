@@ -18,7 +18,7 @@ export default class NodeStrategy extends VersionStrategy {
   static VERSION_REGEX = /"version":\s?"(?<currentVersion>.*)"\s?(?<ending>,?)/;
 
   constructor(
-    private readonly git: Git,
+    @inject(Git) public readonly git: Git,
     @inject('cwd') public readonly cwd: string,
     @inject('args') public readonly args: Args,
   ) {
