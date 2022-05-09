@@ -7,6 +7,8 @@ Inspiration for this project comes from
 
 ## Notes
 
+**VERSION 0.2.0 IS BROKEN. DO _NOT_ USE**
+
 Version 0.1.0 has been formally released. All other changes will come from
 regular feature development (including merge requests).
 
@@ -115,15 +117,12 @@ Whether or not this is the first release. This way no bumping of the
 
 ### --versionPrefix
 
-**Default** `v`
+**Default** ``
 
 The version prefix, used when writing tags. If a version is found that does not
 have the version prefix, such as values that would occur in the `VERSION` export
 or the `version` key in a package.json file the value is prepended on to look
 for the corresponding tags.
-
-This is done because most people do not tag the values as the raw semantic
-version, e.g. `git tag 1.10.3`, and would instead opt for `git tag v1.10.3`.
 
 ### --hostUrl
 
@@ -263,7 +262,7 @@ export default class CustomChangelogWriter extends ChangelogWriter {
     @inject('gitProvider') public readonly gitProvider: GitProvider,
     @inject('args') public readonly args: Args,
     @inject('logger') public readonly log: LoggerInstance,
-    public readonly git: Git,
+    @inject(Git) public readonly git: Git,
   ) {
     super();
   }

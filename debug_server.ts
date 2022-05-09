@@ -1,7 +1,7 @@
 import { Application } from 'https://deno.land/x/abc@v1.3.3/mod.ts';
 
 const app = new Application();
-
+await Deno.writeTextFile('pid', Deno.pid.toString());
 app.get('/version-bump/*', async (c) => {
   console.info(c.path, c.params);
   const filePath = c.path.replace('/version-bump/', '');
