@@ -65,12 +65,7 @@ if (args.changelogWriter !== 'default') {
 }
 
 if (args.versionStrategy === 'node') {
-  const url = resolveFileImportUrl(
-    import.meta.url,
-    'src',
-    'strategies',
-    'node.ts',
-  );
+  const url = new URL('src/strategies/node.ts', import.meta.url).href;
   const imported = await import(url)
     .then((res) => res.default as VersionStrategyConstructable);
   container.register<VersionStrategy>(VersionStrategy, {
@@ -111,12 +106,7 @@ let providerArg = args.gitProvider;
 
 // If the provider arg is not specified we try to find the values.
 if (providerArg === '') {
-  providerArg = resolveFileImportUrl(
-    import.meta.url,
-    'src',
-    'providers',
-    `${parsedGitRemote.hostname}.ts`,
-  );
+  providerArg = new URL(`src/providers/${parsedGitRemote.hostname}.ts`, import.meta.url);
 } else if (
   !providerArg.startsWith('file') && !providerArg.startsWith('http')
 ) {
