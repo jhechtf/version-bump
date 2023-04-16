@@ -34,7 +34,6 @@ export class Git {
   }
 
   constructor(
-    @inject('args') public readonly vargs: Args,
     @inject('cwd') public readonly cwd: string,
   ) {
     if (Deno.build.os === 'windows') this.prefix = ['cmd', '/c'];

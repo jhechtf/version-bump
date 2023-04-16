@@ -131,7 +131,7 @@ async function setupTestingEnv(): Promise<void> {
     } else if (strategy === 'cargo') {
       await Deno.writeTextFile(
         `${packageUrl}/Cargo.toml`,
-        '[package]\nversion = "0.1.1"\n\n[dependencies]\nsomething = { version = "1.0.0" }'
+        '[package]\nversion = "0.1"\n\n[dependencies]\nsomething = { version = "1.0.0" }'
       )
     } else {
       await Deno.writeTextFile(
@@ -407,7 +407,7 @@ Deno.test('CLI Test', async (t) => {
     );
   });
 
-  await t.step('Cargo test', async () => {
+  await t.step('Test Cargo VersionStrategy', async () => {
     await runCommand(
       'deno',
       [

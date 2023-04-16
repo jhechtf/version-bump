@@ -41,7 +41,10 @@ export default class CargoStrategy extends VersionStrategy {
       }
       if (header === '[package]' && line.includes('version = ')) {
         const v = line.split('=').at(1)?.replaceAll('"', '');
-        if (v) return v;
+        if (v) {
+          file.close();
+          return v.trim();
+        }
       }
     }
     return '0.1.0';

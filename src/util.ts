@@ -1,4 +1,4 @@
-import { dirname, fromFileUrl, toFileUrl } from '../deps.ts';
+import { dirname, ensureDir, emptyDir } from '../deps.ts';
 
 export async function fileExists(path: string): Promise<boolean> {
   try {
@@ -83,4 +83,25 @@ export async function runCommand(
     stdout: output,
     code,
   };
+}
+
+async function setupPackage(name: string) {
+  const filename = `packages/${name}`;
+
+  // Ensure the dir is there
+  await emptyDir(filename);
+  // ensure it is git initialized
+  await runCommand(
+    'git',
+    ['init'],
+    filename
+  );
+  // ensure we're not using the gpg signage
+  await runCommand(
+    'git',
+    ['config', 'commit.gpgsign', 'false'],
+    filename
+  );
+  
+  return filename;
 }
