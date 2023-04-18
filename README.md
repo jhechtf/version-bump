@@ -64,13 +64,13 @@ Generally not recommended to use as it would allow for empty commits to occur.
 **Default** `deno`
 
 The strategy to fetch version information. The default is `deno`, and the only
-other option currently bundled together is the `node` strategy. Please see the
-table below for more information about these two items.
+other options currently bundled together is the `node` and `cargo` strategies.
+Please see the table below for more information about these two items.
 
-|                        | Deno                               | Node                                           |
-| :--------------------: | ---------------------------------- | ---------------------------------------------- |
-| Primary Version Source | `VERSION` export in root `deps.ts` | `"version"` field in root `package.json` file. |
-|        Fallback        | most recent git tag or `0.1.0`     | most recent git tag or `0.1.0`.                |
+|                        | Deno                               | Node                                           | Cargo                                                                          |
+| :--------------------: | ---------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| Primary Version Source | `VERSION` export in root `deps.ts` | `"version"` field in root `package.json` file. | `version` key in `[package]` section of `Cargo.toml` located in same directory |
+|        Fallback        | most recent git tag or `0.1.0`     | most recent git tag or `0.1.0`.                | `0.1.0`                                                                        |
 
 In order to make a custom `VersionStrategy` please check the
 [Making a Version Strategy](#making-a-version-strategy)
