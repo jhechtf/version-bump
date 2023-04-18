@@ -441,7 +441,9 @@ Deno.test('CLI Test', async (t) => {
       /\- Adds in new feature\n\s+\[(\w{8})\]\(https:\/\/github.com\/user\/some-repo\/commit\/\1\w+\)/,
     );
 
-    const packageContent = await Deno.readTextFile('packages/github.com/cargo/Cargo.toml');
+    const packageContent = await Deno.readTextFile(
+      'packages/github.com/cargo/Cargo.toml',
+    );
 
     assertEquals(
       packageContent.includes('version = "0.2.0"'),
