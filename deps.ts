@@ -1,4 +1,4 @@
-import 'https://esm.sh/@abraham/reflection@0.10.0';
+import 'https://esm.sh/@abraham/reflection@0.12.0';
 
 export { green, red } from 'https://deno.land/std@0.132.0/fmt/colors.ts';
 
@@ -16,7 +16,7 @@ export {
   predicateAwareClassFactory,
   registry,
   singleton,
-} from 'https://esm.sh/tsyringe@4.6.0';
+} from 'https://esm.sh/tsyringe@4.7.0';
 
 export {
   bgGreen,

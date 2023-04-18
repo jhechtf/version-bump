@@ -14,9 +14,10 @@ import { Commit } from './src/commit.ts';
 const strategies = [
   'deno',
   'node',
+  'cargo',
   'historic',
   'multiple-changelog-runs',
-];
+] as const;
 
 type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
   tag?: string;
@@ -46,6 +47,13 @@ async function writeGitHistory(
     'user.name',
     user.username,
   ], dir);
+
+  console.info('disabling gpg signing (in case user has it enabled)');
+  await runCommand(
+    'git',
+    ['config', 'commit.gpgsign', 'false'],
+    dir,
+  );
 
   console.info('Configuring email');
   await runCommand('git', [
@@ -119,6 +127,11 @@ async function setupTestingEnv(): Promise<void> {
       await Deno.writeTextFile(
         `${packageUrl}/deps.ts`,
         `export const VERSION = "0.1.1"`,
+      );
+    } else if (strategy === 'cargo') {
+      await Deno.writeTextFile(
+        `${packageUrl}/Cargo.toml`,
+        '[package]\nversion = "0.1"\n\n[dependencies]\nsomething = { version = "1.0.0" }',
       );
     } else {
       await Deno.writeTextFile(
@@ -391,6 +404,50 @@ Deno.test('CLI Test', async (t) => {
     assertMatch(
       currentChangelogContents,
       /### Bug Fixes/,
+    );
+  });
+
+  await t.step('Test Cargo VersionStrategy', async () => {
+    await runCommand(
+      'deno',
+      [
+        'run',
+        '-A',
+        '../../../cli.ts',
+        '--versionStrategy',
+        'cargo',
+      ],
+      'packages/github.com/cargo',
+    );
+    // Grab the changelog file.
+    const changelogContent = await Deno.readTextFile(
+      'packages/github.com/cargo/CHANGELOG.md',
+    );
+
+    // Ensure the header is present.
+    assertEquals(
+      changelogContent.includes(
+        HEADER.join('\n\n'),
+      ),
+      true,
+    );
+    assertEquals(
+      changelogContent.includes('## [0.2.0]'),
+      true,
+    );
+    assertEquals(changelogContent.includes('### Features'), true);
+    assertMatch(
+      changelogContent,
+      /\- Adds in new feature\n\s+\[(\w{8})\]\(https:\/\/github.com\/user\/some-repo\/commit\/\1\w+\)/,
+    );
+
+    const packageContent = await Deno.readTextFile(
+      'packages/github.com/cargo/Cargo.toml',
+    );
+
+    assertEquals(
+      packageContent.includes('version = "0.2.0"'),
+      true,
     );
   });
 

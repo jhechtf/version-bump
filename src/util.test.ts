@@ -75,6 +75,7 @@ Deno.test('Resolve file url', () => {
     'https://deno.land/x/version_bump@0.1.0/src/providers/github.com.ts',
   );
 
+  // @ts-ignore
   assertThrows(() => resolveFileImportUrl.call(null, 1, 2, 3));
 });
 

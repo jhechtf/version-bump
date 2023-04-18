@@ -71,6 +71,14 @@ if (args.versionStrategy === 'node') {
   container.register<VersionStrategy>(VersionStrategy, {
     useClass: imported,
   });
+} else if (args.versionStrategy === 'cargo') {
+  const url = new URL('src/strategies/cargo.ts', import.meta.url).href;
+  const imported = await import(url)
+    .then((res) => res.default as VersionStrategyConstructable);
+
+  container.register<VersionStrategy>(VersionStrategy, {
+    useClass: imported,
+  });
 } else if (args.versionStrategy !== 'deno') {
   let { versionStrategy } = args;
   if (
@@ -106,7 +114,10 @@ let providerArg = args.gitProvider;
 
 // If the provider arg is not specified we try to find the values.
 if (providerArg === '') {
-  providerArg = new URL(`src/providers/${parsedGitRemote.hostname}.ts`, import.meta.url);
+  providerArg = new URL(
+    `src/providers/${parsedGitRemote.hostname}.ts`,
+    import.meta.url,
+  );
 } else if (
   !providerArg.startsWith('file') && !providerArg.startsWith('http')
 ) {
