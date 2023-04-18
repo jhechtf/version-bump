@@ -50,4 +50,4 @@ export {
   ensureFile,
 } from 'https://deno.land/std@0.132.0/fs/mod.ts';
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
