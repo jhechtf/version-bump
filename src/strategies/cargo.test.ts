@@ -27,6 +27,16 @@ Deno.test(
       ['config', 'commit.gpgsign', 'false'],
       'packages/cargo-vs',
     );
+    await runCommand(
+      'git',
+      ['config', 'user.email', 'testing@test.com'],
+      'packages/cargo-vs'
+    );
+    await runCommand(
+      'git',
+      ['config', 'user.name', 'Testing'],
+      'packages/cargo-vs'
+    );
     await Deno.writeTextFile(
       'packages/cargo-vs/Cargo.toml',
       `[package]
