@@ -51,9 +51,9 @@ export async function prepareGitTests() {
   );
   await runCommand(
     'git',
-    ['config','commit.gpgsign', 'false'],
-    'packages/git-test'
-  )
+    ['config', 'commit.gpgsign', 'false'],
+    'packages/git-test',
+  );
   // Setup user email
   await runCommand(
     'git',

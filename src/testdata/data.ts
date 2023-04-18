@@ -1,7 +1,9 @@
 import { assertEquals } from '../../deps.ts';
 
-export function assertObject<T extends { [key: string]: any }>(actual: T, expected: T) {
-
+export function assertObject<T extends { [key: string]: any }>(
+  actual: T,
+  expected: T,
+) {
   for (const [key, value] of Object.entries(expected)) {
     assertEquals(
       actual[key as keyof T],

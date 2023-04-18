@@ -74,10 +74,10 @@ if (args.versionStrategy === 'node') {
 } else if (args.versionStrategy === 'cargo') {
   const url = new URL('src/strategies/cargo.ts', import.meta.url).href;
   const imported = await import(url)
-    .then(res => res.default as VersionStrategyConstructable);
+    .then((res) => res.default as VersionStrategyConstructable);
 
   container.register<VersionStrategy>(VersionStrategy, {
-    useClass: imported
+    useClass: imported,
   });
 } else if (args.versionStrategy !== 'deno') {
   let { versionStrategy } = args;

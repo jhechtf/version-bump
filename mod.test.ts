@@ -52,7 +52,7 @@ async function writeGitHistory(
   await runCommand(
     'git',
     ['config', 'commit.gpgsign', 'false'],
-    dir
+    dir,
   );
 
   console.info('Configuring email');
@@ -131,8 +131,8 @@ async function setupTestingEnv(): Promise<void> {
     } else if (strategy === 'cargo') {
       await Deno.writeTextFile(
         `${packageUrl}/Cargo.toml`,
-        '[package]\nversion = "0.1"\n\n[dependencies]\nsomething = { version = "1.0.0" }'
-      )
+        '[package]\nversion = "0.1"\n\n[dependencies]\nsomething = { version = "1.0.0" }',
+      );
     } else {
       await Deno.writeTextFile(
         `${packageUrl}/package.json`,
@@ -415,14 +415,38 @@ Deno.test('CLI Test', async (t) => {
         '-A',
         '../../../cli.ts',
         '--versionStrategy',
-        'cargo'
+        'cargo',
       ],
-      'packages/github.com/cargo'
+      'packages/github.com/cargo',
     );
-    const fileContent = await Deno.readTextFile(
-      'packages/github.com/cargo/Cargo.toml'
+    // Grab the changelog file.
+    const changelogContent = await Deno.readTextFile(
+      'packages/github.com/cargo/CHANGELOG.md',
     );
-    assertMatch(fileContent, /version = "0\.2\.0"/)
+
+    // Ensure the header is present.
+    assertEquals(
+      changelogContent.includes(
+        HEADER.join('\n\n'),
+      ),
+      true,
+    );
+    assertEquals(
+      changelogContent.includes('## [0.2.0]'),
+      true,
+    );
+    assertEquals(changelogContent.includes('### Features'), true);
+    assertMatch(
+      changelogContent,
+      /\- Adds in new feature\n\s+\[(\w{8})\]\(https:\/\/github.com\/user\/some-repo\/commit\/\1\w+\)/,
+    );
+
+    const packageContent = await Deno.readTextFile('packages/github.com/cargo/Cargo.toml');
+
+    assertEquals(
+      packageContent.includes('version = "0.2.0"'),
+      true,
+    );
   });
 
   await t.step('No Tags test', async () => {

@@ -1,4 +1,4 @@
-import { ensureDir, emptyDir, container, assertEquals } from '../../deps.ts';
+import { assertEquals, container, emptyDir, ensureDir } from '../../deps.ts';
 import { runCommand } from '../util.ts';
 import CargoVersionStrategy from './cargo.ts';
 import { VersionStrategy } from '../versionStrategy.ts';
@@ -8,7 +8,7 @@ async function fakeCargoPackages() {
   /**
    * What do we do here?
    */
-  return 0
+  return 0;
 }
 
 Deno.test(
@@ -20,33 +20,34 @@ Deno.test(
     await runCommand(
       'git',
       ['init'],
-      'packages/cargo-vs'
+      'packages/cargo-vs',
     );
     await runCommand(
       'git',
       ['config', 'commit.gpgsign', 'false'],
-      'packages/cargo-vs'
+      'packages/cargo-vs',
     );
-    await Deno.writeTextFile('packages/cargo-vs/Cargo.toml',
-    `[package]
+    await Deno.writeTextFile(
+      'packages/cargo-vs/Cargo.toml',
+      `[package]
 version = "0.1.1"
 
 [dependencies]
-`
+`,
     );
     await runCommand(
       'git',
       ['commit', '-m', 'chore: Initial Commit', '--allow-empty'],
-      'packages/cargo-vs'
+      'packages/cargo-vs',
     );
     await runCommand(
       'git',
       ['tag', '0.1.1'],
-      'packages/cargo-vs'
+      'packages/cargo-vs',
     );
 
-    container.register('cwd',{
-      useValue: 'packages/cargo-vs'
+    container.register('cwd', {
+      useValue: 'packages/cargo-vs',
     });
     container.register(Git, {
       useClass: Git,
@@ -66,7 +67,7 @@ version = "0.1.1"
       const newVersion = await vsInstance.getCurrentVersion();
       assertEquals(newVersion, '2.0.0');
     });
-    
+
     // TODO(jim): Add in a version that does not have a good Cargo.toml file.
-  }
+  },
 );

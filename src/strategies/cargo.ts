@@ -16,13 +16,13 @@ export default class CargoStrategy extends VersionStrategy {
     let header = '';
     const split = file.split('\n');
 
-    for (let i =0, line = split[i]; line; line = split[++i]) {
+    for (let i = 0, line = split[i]; line; line = split[++i]) {
       if (line.match(/\[.*\]/)) {
         header = line.trim();
       }
       if (header === '[package]' && line.includes('version = ')) {
         let newLine = line.replace(/".*"/, `"${newVersion}"`);
-        split[i] = newLine; 
+        split[i] = newLine;
         break;
       }
     }
