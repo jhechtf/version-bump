@@ -7,5 +7,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: denoland/setup-deno@v1
-      - run: deno run -A cli.ts
+      - run: deno task version-bump
       - run: git push && git push --tags
