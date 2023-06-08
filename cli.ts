@@ -12,7 +12,6 @@ import {
 import DenoTsStrategy from './src/strategies/deno.ts';
 import { GitConvention, GitConventionBuildable } from './src/gitConvention.ts';
 import { Git } from './src/git.ts';
-import { resolveFileImportUrl } from './src/util.ts';
 import {
   GitProvider,
   GitProviderBuildable,
