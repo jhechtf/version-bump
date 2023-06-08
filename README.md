@@ -24,9 +24,11 @@ my way up to a 1.0.0 release. You can check progress at the
    presets, and even the changelog writer.
 
 ## Installation and Usage
+
 ### As a task
 
-The preferred way to use Version Bump would be to add a task definition to your `deno.json` file like so
+The preferred way to use Version Bump would be to add a task definition to your
+`deno.json` file like so
 
 ```json
 {
@@ -38,11 +40,20 @@ The preferred way to use Version Bump would be to add a task definition to your 
 
 #### In GitHub Actions
 
-Create a workflow called `version.yml` in `.github/workflows` with the following contents
+Create a workflow called `version.yml` in `.github/workflows` with the following
+contents
 
-**NOTE 1:** Version Bump defaults to whoever the current Git user is. If your Github branch has protection rules that require pull requests or signed commits, this job _will_ fail. Work is being done to determine the best way to sign commits through actions. See [#33](https://github.com/jhechtf/version-bump/issues/33) for information as it comes.
+**NOTE 1:** Version Bump defaults to whoever the current Git user is. If your
+Github branch has protection rules that require pull requests or signed commits,
+this job _will_ fail. Work is being done to determine the best way to sign
+commits through actions. See
+[#33](https://github.com/jhechtf/version-bump/issues/33) for information as it
+comes.
 
-**NOTE 2:** When using `actions/checkout@v3` you must set a `fetch-depth` to `0` in order to get all the commit history. If your repository has many commits between version releases, this might cause an increase in run time and could possibly fail.
+**NOTE 2:** When using `actions/checkout@v3` you must set a `fetch-depth` to `0`
+in order to get all the commit history. If your repository has many commits
+between version releases, this might cause an increase in run time and could
+possibly fail.
 
 ```yml
 name: Version Bump
@@ -83,7 +94,6 @@ version-bump
 ```
 deno run -A https://deno.land/x/version_bump/cli.ts
 ```
-
 
 ## Options
 
