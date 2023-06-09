@@ -7,6 +7,7 @@
       "exclude": ["CHANGELOG.md"]
     }
   },
+  "lock": false,
   "tasks": {
     "test": "deno test -A",
     "generate-coverage": "deno coverage --exclude=src\/testdata\/ --exclude=.test.ts --lcov --output=lcov.info coverage",
