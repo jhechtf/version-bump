@@ -1,4 +1,5 @@
-import { dirname, emptyDir, ensureDir } from '../deps.ts';
+import { dirname, emptyDir } from '../deps.ts';
+import { Commit } from './commit.ts';
 
 export async function fileExists(path: string): Promise<boolean> {
   try {
@@ -85,7 +86,7 @@ export async function runCommand(
   };
 }
 
-async function setupPackage(name: string) {
+export async function setupPackage(name: string) {
   const filename = `packages/${name}`;
 
   // Ensure the dir is there
@@ -104,4 +105,28 @@ async function setupPackage(name: string) {
   );
 
   return filename;
+}
+
+export async function fakeGitHistory(gitRoot: string, commits: Omit<Commit, 'sha'>[]) {
+  /**
+   * 1. Iterate over the commits
+   * 2. create a new empty commit every time with the filled out properties.
+   * 3. return true?
+   */
+  for(const commit of commits) {
+    await runCommand(
+      'git',
+      ['commit', '-m', `"${commit.subject}"`, '--allow-empty'],
+      gitRoot,
+    );
+
+    if(commit.tag) {
+      await runCommand(
+        'git',
+        ['tag', commit.tag],
+        gitRoot
+      );
+    }
+  }
+  return true;
 }
