@@ -9,10 +9,13 @@
   },
   "tasks": {
     "test": "deno test -A",
-    "test-coverage": "deno test -A --no-check --coverage=coverage && deno coverage --exclude=src\/testdata\/ --exclude=.test.ts --lcov --output=lcov.info coverage && deno run -A --no-check https://deno.land/x/code_coverage/cli.ts"
+    "generate-coverage": "deno coverage --exclude=src\/testdata\/ --exclude=.test.ts --lcov --output=lcov.info coverage",
+    "code-coverage": "deno run -A https://deno.land/x/code_coverage@0.2.1/cli.ts",
+    "test-coverage": "rm -rf coverage && deno task test --no-check --coverage=coverage",
+    "test:coverage": "deno task test-coverage && deno task generate-coverage && deno task code-coverage",
+    "version-bump": "deno run -A cli.ts"
   },
   "compilerOptions": {
-    "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   }
 }

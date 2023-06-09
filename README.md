@@ -23,14 +23,76 @@ my way up to a 1.0.0 release. You can check progress at the
 2. Documentation on how to create custom version bump strategies, git providers,
    presets, and even the changelog writer.
 
-## Installation
+## Installation and Usage
 
-Run
+### As a task
+
+The preferred way to use Version Bump would be to add a task definition to your
+`deno.json` file like so
+
+```json
+{
+  "tasks": {
+    "version-bump": "deno run -A https://deno.land/x/version_bump@1.1.0/cli.ts"
+  }
+}
+```
+
+#### In GitHub Actions
+
+Create a workflow called `version.yml` in `.github/workflows` with the following
+contents
+
+**NOTE 1:** Version Bump defaults to whoever the current Git user is. If your
+Github branch has protection rules that require pull requests or signed commits,
+this job _will_ fail. Work is being done to determine the best way to sign
+commits through actions. See
+[#33](https://github.com/jhechtf/version-bump/issues/33) for information as it
+comes.
+
+**NOTE 2:** When using `actions/checkout@v3` you must set a `fetch-depth` to `0`
+in order to get all the commit history. If your repository has many commits
+between version releases, this might cause an increase in run time and could
+possibly fail.
+
+```yml
+name: Version Bump
+on:
+  push:
+    branches: ["mainline"]
+
+permissions:
+  contents: write
+jobs:
+  bump:
+    name: Bump and Push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Gotta set the fetch depth to 0 so that it fetches everything
+          fetch-depth: 0
+      - uses: denoland/setup-deno@v1
+      - run: echo $TEST_REF;
+      - run: git config user.name "version-bot" && git config user.email "your-email+bot@gmail.com"
+      - run: deno task version-bump
+      - run: git push && git push --tags
+```
+
+### Installation (not recommended)
+
+For Deno `<1.20`, you must install or run the script directly.
 
 ```
-deno install -A -n version-bump https://deno.land/x/version_bump
+deno install -A -n version-bump https://deno.land/x/version_bump/cli.ts
 # In the git directory you want to version bump
 version-bump
+```
+
+#### Alternative
+
+```
+deno run -A https://deno.land/x/version_bump/cli.ts
 ```
 
 ## Options
