@@ -11,5 +11,6 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: "1.31.3"
+      - run: git config user.name "version-bot" && git config user.email "jhechtf+version-bot@gmail.com"
       - run: deno run -A cli.ts
       - run: git push && git push --tags
