@@ -1,4 +1,11 @@
-import { type Args, inject, injectable, readLines, resolve } from '../deps.ts';
+import {
+  type Args,
+  inject,
+  injectable,
+  inversify,
+  readLines,
+  resolve,
+} from '../deps.ts';
 
 import { Runnable } from './runnable.ts';
 import { Git } from './git.ts';
@@ -13,7 +20,7 @@ import { GitConvention } from './gitConvention.ts';
 /**
  * @description Historic CLI class is the CLI that is ran for generating a brand new commit
  */
-@injectable()
+@inversify.injectable()
 export default class HistoricCli implements Runnable {
   constructor(
     @inject('cwd') public readonly cwd: string,

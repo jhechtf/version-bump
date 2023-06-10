@@ -1,8 +1,14 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-import { inject, injectable, readLines, resolve } from '../../deps.ts';
+import {
+  inject,
+  injectable,
+  inversify,
+  readLines,
+  resolve,
+} from '../../deps.ts';
 import { Git } from '../git.ts';
 
-@injectable()
+@inversify.injectable()
 export default class CargoStrategy extends VersionStrategy {
   constructor(
     @inject(Git) public readonly git: Git,

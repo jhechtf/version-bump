@@ -1,4 +1,4 @@
-import { type Args, inject, injectable } from '../deps.ts';
+import { type Args, inject, injectable, inversify } from '../deps.ts';
 import { Commit } from './commit.ts';
 
 export const COMMIT_DELIMITER = '------';
@@ -12,7 +12,7 @@ interface CommandOutput {
 const WHOLE =
   /^(?:(?<proto>\w+):\/\/)?(?:(?<username>\w+)(?::(?<pass>.+))?@)?(?<host>.+?)(?::(?<port>\d+))?(:|\/)(?<path>.*?)(\.git)?$/m;
 
-@injectable()
+@inversify.injectable()
 export class Git {
   prefix: string[] = [];
   #decoder = new TextDecoder();

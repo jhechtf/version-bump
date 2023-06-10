@@ -1,5 +1,5 @@
 import { Commit } from './commit.ts';
-import { type Args, injectable } from '../deps.ts';
+import { type Args, injectable, inversify } from '../deps.ts';
 
 export interface CalculateBumpArgs {
   currentVersion: string;
@@ -30,7 +30,7 @@ export interface GitConventionBuildable {
   new (args: Args): GitConvention;
 }
 
-@injectable()
+@inversify.injectable()
 export class GitConvention {
   // Class left empty on purpose do not directly use this class.
 }

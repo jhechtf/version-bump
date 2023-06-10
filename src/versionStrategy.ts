@@ -1,4 +1,4 @@
-import { type Args, injectable } from '../deps.ts';
+import { type Args, injectable, inversify } from '../deps.ts';
 
 import { Git } from './git.ts';
 
@@ -20,7 +20,7 @@ export interface VersionStrategyConstructable {
   new (cwd: string, git: Git, args: Args): VersionStrategy;
 }
 
-@injectable()
+@inversify.injectable()
 export class VersionStrategy {
   // Class left blank on purpose. Do not directly use this class
 }

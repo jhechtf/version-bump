@@ -1,4 +1,4 @@
-import { injectable } from '../deps.ts';
+import { injectable, inversify } from '../deps.ts';
 
 export interface GitProviderBuildable {
   new (url: URL): GitProvider;
@@ -18,7 +18,8 @@ export interface GitProvider {
   commitUrl(commit: string): string;
 }
 
-@injectable()
+inversify.injectable();
+
 export class GitProvider {
   // Class left empty on purpose. Do not directly user this class
 }

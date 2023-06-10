@@ -1,4 +1,5 @@
-import { dirname, emptyDir, ensureDir } from '../deps.ts';
+import { dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
+import { Commit } from './commit.ts';
 
 export async function fileExists(path: string): Promise<boolean> {
   try {
@@ -85,7 +86,12 @@ export async function runCommand(
   };
 }
 
-async function setupPackage(name: string) {
+export async function setupPackage(
+  name: string,
+  origin = 'ssh://github.com:fake/repo,git',
+  user = 'Fake Name',
+  email = 'fake@test.com',
+) {
   const filename = `packages/${name}`;
 
   // Ensure the dir is there
@@ -103,5 +109,88 @@ async function setupPackage(name: string) {
     filename,
   );
 
+  await runCommand(
+    'git',
+    ['remote', 'add', 'origin', origin],
+    filename,
+  );
+
+  await runCommand(
+    'git',
+    ['config', 'user.name', user],
+    filename,
+  );
+
+  await runCommand(
+    'git',
+    ['config', 'user.email', email],
+    filename,
+  );
+
   return filename;
+}
+
+export async function fakeGitHistory(
+  gitRoot: string,
+  commits: Omit<Commit, 'sha'>[],
+) {
+  /**
+   * 1. Iterate over the commits
+   * 2. create a new empty commit every time with the filled out properties.
+   * 3. return true?
+   */
+  for (const commit of commits) {
+    const optional = commit.author ? ['--author', commit.author] : [];
+    await runCommand(
+      'git',
+      ['commit', '-m', `${commit.subject}`, '--allow-empty', ...optional],
+      gitRoot,
+    );
+
+    if (commit.tag) {
+      await runCommand(
+        'git',
+        ['tag', commit.tag],
+        gitRoot,
+      );
+    }
+  }
+  return true;
+}
+
+export function normalizeImport(str: string): string {
+  if (str.startsWith('file:') || /^https?:/.test(str)) return str;
+  return toFileUrl(resolve(str)).href;
+}
+
+/**
+ * @description Creates a fake version source file in the `location` direction of the corresponding type of a package.json,
+ * deps.ts, or Cargo.toml file
+ * @param location file location where the package is located, and where the appropriate file should be made.
+ * @param type The type of package this is going to be.
+ */
+export async function generateFakeVersionSource(
+  location: string,
+  type: 'deno' | 'node' | 'cargo' = 'deno',
+  version = '0.1.0',
+) {
+  console.info(location, version);
+  let contents = '';
+  switch (type) {
+    case 'node':
+      contents = JSON.stringify({ version });
+      break;
+    case 'cargo':
+      // Cargo.toml
+      contents = `[package]\nversion="${version}"[test]something="else"`;
+      break;
+    // Deno is the default
+    default:
+      // do stuff
+      await Deno.writeTextFile(
+        `${location}/deps.ts`,
+        `export const VERSION = '${version}';`,
+      );
+      break;
+  }
 }

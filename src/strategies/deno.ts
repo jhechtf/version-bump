@@ -3,13 +3,14 @@ import {
   type Args,
   inject,
   injectable,
+  inversify,
   readLines,
   resolve,
 } from '../../deps.ts';
 import args from '../../args.ts';
 import { Git } from '../git.ts';
 
-@injectable()
+@inversify.injectable()
 export default class DenoTsStrategy extends VersionStrategy {
   FIND = /VERSION\s?(:|=)\s?('|")(?<currentVersion>.*?)\2(,|;)?/;
 

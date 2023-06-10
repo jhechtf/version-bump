@@ -1,7 +1,7 @@
 import { GitProvider } from '../gitProvider.ts';
-import { injectable } from '../../deps.ts';
+import { injectable, inversify } from '../../deps.ts';
 
-@injectable()
+@inversify.injectable()
 export default class TestGitProvider extends GitProvider {
   constructor(public readonly url: URL) {
     super();

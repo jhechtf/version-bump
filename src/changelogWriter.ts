@@ -1,6 +1,6 @@
 import { Commit } from './commit.ts';
 import { GitProvider } from './gitProvider.ts';
-import { injectable } from '../deps.ts';
+import { injectable, inversify } from '../deps.ts';
 
 export interface ChangelogWriterBuldable {
   new (provider: GitProvider): ChangelogWriter;
@@ -32,7 +32,7 @@ export interface ChangelogWriter {
 /**
  * @description base class needed for Dependency inject, should not be used directly.
  */
-@injectable()
+@inversify.injectable()
 export class ChangelogWriter {
   // Class left empty on purpose.
 }
