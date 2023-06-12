@@ -86,7 +86,7 @@ export async function runCommand(
   };
 }
 
-export async function setupPackage(name: string) {
+export async function setupPackage(name: string, origin = 'ssh://github.com:fake/repo,git') {
   const filename = `packages/${name}`;
 
   // Ensure the dir is there
@@ -101,6 +101,12 @@ export async function setupPackage(name: string) {
   await runCommand(
     'git',
     ['config', 'commit.gpgsign', 'false'],
+    filename,
+  );
+
+  await runCommand(
+    'git',
+    ['remote', 'add', 'origin', origin],
     filename,
   );
 
