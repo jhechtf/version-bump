@@ -10,7 +10,7 @@ Inspiration for this project comes from
 **VERSION 0.2.0 IS BROKEN. DO _NOT_ USE**
 
 If you are using a version of Deno that has TypeScript 5, you will need to use
-Version Bump `>=1.2.0`, OR run with the `--no-check` (not advised) option, e.g.:
+Version Bump `>=1.1.1`, OR run with the `--no-check` (not advised) option, e.g.:
 
 ```
 deno run -A --no-check https://deno.land/x/version_bump/cli.ts
