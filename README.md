@@ -16,7 +16,8 @@ Version Bump `>=1.2.0`, OR run with the `--no-check` (not advised) option, e.g.:
 deno run -A --no-check https://deno.land/x/version_bump/cli.ts
 ```
 
-This is because TS 5 made some updates to decorators which changed the definitions for certain types of decorators.
+This is because TS 5 made some updates to decorators which changed the
+definitions for certain types of decorators.
 
 ### Things to come
 
