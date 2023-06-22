@@ -32,7 +32,7 @@ export interface ChangelogWriter {
 /**
  * @description base class needed for Dependency inject, should not be used directly.
  */
-@inversify.injectable()
+@injectable()
 export class ChangelogWriter {
   // Class left empty on purpose.
 }

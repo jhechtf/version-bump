@@ -3,7 +3,7 @@ import { GitProvider } from '../gitProvider.ts';
 import { Commit } from '../../mod.ts';
 import { inject, injectable, inversify } from '../../deps.ts';
 
-@inversify.injectable()
+@injectable()
 export default class TestChangelogWriter extends ChangelogWriter {
   constructor(
     @inject('gitProvider') public readonly gitProvider: GitProvider,

@@ -13,7 +13,7 @@ import { Git } from '../git.ts';
 import { type LoggerInstance } from '../../logger.ts';
 import '../../args.ts';
 
-@inversify.injectable()
+@injectable()
 export class DefaultWriter extends ChangelogWriter {
   static HEADER = /^\s?##\s?(.*)$/m;
 

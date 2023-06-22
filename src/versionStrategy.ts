@@ -20,7 +20,7 @@ export interface VersionStrategyConstructable {
   new (cwd: string, git: Git, args: Args): VersionStrategy;
 }
 
-@inversify.injectable()
+@injectable()
 export class VersionStrategy {
   // Class left blank on purpose. Do not directly use this class
 }

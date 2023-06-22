@@ -1,7 +1,7 @@
 import { GitProvider } from '../gitProvider.ts';
-import { inversify, unmanaged } from '../../deps.ts';
+import { injectable, unmanaged } from '../../deps.ts';
 
-@inversify.injectable()
+@injectable()
 export default class BitbucketProvider implements GitProvider {
   constructor(@unmanaged() public readonly url: URL) {}
   gitDiffUrl(from: string, to = 'HEAD') {

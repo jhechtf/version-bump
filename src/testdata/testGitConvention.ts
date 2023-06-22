@@ -5,7 +5,7 @@ import {
 } from '../gitConvention.ts';
 import { injectable, inversify } from '../../deps.ts';
 
-@inversify.injectable()
+@injectable()
 export default class TestPreset extends GitConvention {
   calculateBump({
     currentVersion,

@@ -18,7 +18,7 @@ import { GitConvention } from './gitConvention.ts';
 import { type LoggerInstance } from '../logger.ts';
 import { Runnable } from './runnable.ts';
 
-@inversify.injectable()
+@injectable()
 export class VersionArgsCli implements Runnable {
   constructor(
     @inject('cwd') public readonly cwd: string,

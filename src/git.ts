@@ -12,7 +12,7 @@ interface CommandOutput {
 const WHOLE =
   /^(?:(?<proto>\w+):\/\/)?(?:(?<username>\w+)(?::(?<pass>.+))?@)?(?<host>.+?)(?::(?<port>\d+))?(:|\/)(?<path>.*?)(\.git)?$/m;
 
-@inversify.injectable()
+@injectable()
 export class Git {
   prefix: string[] = [];
   #decoder = new TextDecoder();

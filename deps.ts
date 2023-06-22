@@ -7,18 +7,6 @@ export * as semver from 'https://deno.land/x/semver@v1.4.0/mod.ts';
 
 export { type Args, parse } from 'https://deno.land/std@0.132.0/flags/mod.ts';
 
-// export {
-//   container,
-//   type DependencyContainer,
-//   type FactoryFunction,
-//   inject,
-//   injectable,
-//   injectAll,
-//   predicateAwareClassFactory,
-//   registry,
-//   singleton,
-// } from 'https://esm.sh/tsyringe@4.8.0';
-
 export * as inversify from 'https://esm.sh/inversify@6.0.1';
 // Next line is a temporary shim.
 

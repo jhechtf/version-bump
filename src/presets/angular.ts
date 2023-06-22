@@ -5,7 +5,7 @@ import {
 } from '../gitConvention.ts';
 import { injectable, inversify, semver } from '../../deps.ts';
 
-@inversify.injectable()
+@injectable()
 export default class AngularPreset extends GitConvention {
   calculateBump({
     currentVersion,

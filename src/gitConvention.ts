@@ -30,7 +30,7 @@ export interface GitConventionBuildable {
   new (args: Args): GitConvention;
 }
 
-@inversify.injectable()
+@injectable()
 export class GitConvention {
   // Class left empty on purpose do not directly use this class.
 }

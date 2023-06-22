@@ -10,7 +10,7 @@ import {
 import args from '../../args.ts';
 import { Git } from '../git.ts';
 
-@inversify.injectable()
+@injectable()
 export default class DenoTsStrategy extends VersionStrategy {
   FIND = /VERSION\s?(:|=)\s?('|")(?<currentVersion>.*?)\2(,|;)?/;
 

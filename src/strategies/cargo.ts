@@ -8,7 +8,7 @@ import {
 } from '../../deps.ts';
 import { Git } from '../git.ts';
 
-@inversify.injectable()
+@injectable()
 export default class CargoStrategy extends VersionStrategy {
   constructor(
     @inject(Git) public readonly git: Git,

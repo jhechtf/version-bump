@@ -14,7 +14,7 @@ import {
 } from '../../deps.ts';
 import args from '../../args.ts';
 
-@inversify.injectable()
+@injectable()
 export default class NodeStrategy extends VersionStrategy {
   static VERSION_REGEX = /"version":\s?"(?<currentVersion>.*)"\s?(?<ending>,?)/;
 
