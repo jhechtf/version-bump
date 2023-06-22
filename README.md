@@ -9,12 +9,15 @@ Inspiration for this project comes from
 
 **VERSION 0.2.0 IS BROKEN. DO _NOT_ USE**
 
-Version 0.1.0 has been formally released. All other changes will come from
-regular feature development (including merge requests).
+If you are using a version of Deno that has TypeScript 5, you will need to use
+Version Bump `>=1.2.0`, OR run with the `--no-check` (not advised) option, e.g.:
 
-However, _do not_ consider this a stable release, and expect changes as I work
-my way up to a 1.0.0 release. You can check progress at the
-[v1.0.0](https://github.com/jhechtf/version-bump/milestone/1) Milestone.
+```
+deno run -A --no-check https://deno.land/x/version_bump/cli.ts
+```
+
+This is because TS 5 made some updates to decorators which changed the
+definitions for certain types of decorators.
 
 ### Things to come
 

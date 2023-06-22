@@ -1,11 +1,7 @@
 {
   "fmt": {
-    "options": {
-      "singleQuote": true
-    },
-    "files": {
-      "exclude": ["CHANGELOG.md"]
-    }
+    "singleQuote": true,
+    "exclude": ["CHANGELOG.md"]
   },
   "lock": false,
   "tasks": {

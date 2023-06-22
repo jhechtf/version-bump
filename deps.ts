@@ -16,7 +16,7 @@ export {
   predicateAwareClassFactory,
   registry,
   singleton,
-} from 'https://esm.sh/tsyringe@4.7.0';
+} from 'https://esm.sh/tsyringe@4.8.0';
 
 export {
   bgGreen,
