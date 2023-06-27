@@ -3,7 +3,7 @@ import {
   GenerateCommitArgs,
   GitConvention,
 } from '../gitConvention.ts';
-import { injectable, semver } from '../../deps.ts';
+import { injectable, inversify, semver } from '../../deps.ts';
 
 @injectable()
 export default class AngularPreset extends GitConvention {

@@ -1,7 +1,13 @@
 {
   "fmt": {
     "singleQuote": true,
-    "exclude": ["CHANGELOG.md"]
+    "exclude": [
+      "CHANGELOG.md",
+      "packages/**/*"
+    ]
+  },
+  "imports": {
+    "util": "./src/util.ts"
   },
   "lock": false,
   "tasks": {

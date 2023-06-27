@@ -5,12 +5,18 @@ We bumpin' versions like it's 1999.
 Inspiration for this project comes from
 [Standard Version](https://github.com/conventional-changelog/standard-version).
 
+## Version Bump 2.0
+
+Version Bump has moved from TSyringe to Inversify. The move was done largely as
+an effort to enable Version Bump to run in versions of Deno that used TypeScript
+5+, which made some changes to decorators that broke TSyringe.
+
 ## Notes
 
 **VERSION 0.2.0 IS BROKEN. DO _NOT_ USE**
 
 If you are using a version of Deno that has TypeScript 5, you will need to use
-Version Bump `>=1.2.0`, OR run with the `--no-check` (not advised) option, e.g.:
+Version Bump `>=1.1.1`, OR run with the `--no-check` (not advised) option, e.g.:
 
 ```
 deno run -A --no-check https://deno.land/x/version_bump/cli.ts
@@ -23,8 +29,6 @@ definitions for certain types of decorators.
 
 1. A configuration file spec so that the user doesn't need to supply every
    argument to the command line.
-2. Documentation on how to create custom version bump strategies, git providers,
-   presets, and even the changelog writer.
 
 ## Installation and Usage
 

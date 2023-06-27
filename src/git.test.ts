@@ -1,13 +1,8 @@
-import {
-  assertEquals,
-  assertRejects,
-  container,
-  emptyDir,
-  ensureDir,
-} from '../deps.ts';
+import { assertEquals, assertRejects, emptyDir, ensureDir } from '../deps.ts';
 import '../args.ts';
 // import './cwd.ts';
 import { Git } from './git.ts';
+import { container } from './container.ts';
 
 import { assertObject, urlMap } from './testdata/data.ts';
 
@@ -98,8 +93,8 @@ for (const [url, expected] of Object.entries(urlMap)) {
 
 Deno.test('Git Class', async (t) => {
   await prepareGitTests();
-  container.register('cwd', { useValue: 'packages/git-test' });
-  const git = container.resolve(Git);
+  container.bind('cwd').toConstantValue('packages/git-test');
+  const git = container.resolve<Git>(Git);
 
   await t.step('Logs work', async () => {
     // Grab items

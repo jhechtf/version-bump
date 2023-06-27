@@ -8,6 +8,7 @@ import {
   type Args,
   inject,
   injectable,
+  inversify,
   readLines,
   resolve,
 } from '../../deps.ts';

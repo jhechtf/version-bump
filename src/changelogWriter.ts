@@ -1,6 +1,6 @@
 import { Commit } from './commit.ts';
 import { GitProvider } from './gitProvider.ts';
-import { injectable } from '../deps.ts';
+import { injectable, inversify } from '../deps.ts';
 
 export interface ChangelogWriterBuldable {
   new (provider: GitProvider): ChangelogWriter;

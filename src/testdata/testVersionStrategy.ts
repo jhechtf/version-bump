@@ -1,5 +1,5 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-import { inject, injectable, resolve } from '../../deps.ts';
+import { inject, injectable, inversify, resolve } from '../../deps.ts';
 
 @injectable()
 export default class TestVersionStrategy extends VersionStrategy {

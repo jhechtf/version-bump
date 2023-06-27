@@ -1,4 +1,4 @@
-import { type Args, injectable } from '../deps.ts';
+import { type Args, injectable, inversify } from '../deps.ts';
 
 import { Git } from './git.ts';
 

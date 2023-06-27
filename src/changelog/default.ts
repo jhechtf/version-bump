@@ -1,6 +1,12 @@
 import { ChangelogWriter } from '../changelogWriter.ts';
 import { Commit } from '../commit.ts';
-import { type Args, inject, injectable, readLines } from '../../deps.ts';
+import {
+  type Args,
+  inject,
+  injectable,
+  inversify,
+  readLines,
+} from '../../deps.ts';
 import { capitalize, fileExists } from '../util.ts';
 import { GitProvider } from '../gitProvider.ts';
 import { Git } from '../git.ts';
