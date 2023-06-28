@@ -5,7 +5,6 @@ import {
   assertRejects,
   emptyDir,
 } from './deps.ts';
-// import _cli from ../cli.ts';
 import args from './args.ts';
 
 import { runCommand } from './src/util.ts';

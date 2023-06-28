@@ -34,7 +34,6 @@ export class VersionArgsCli implements Runnable {
     this.log.debug(() => this);
     // Code needed to run this bitch here.
     // 1. Grab the current version
-    console.log(this.versionStrategy.getCurrentVersion);
     let currentVersion = await this.versionStrategy.getCurrentVersion();
     console.info(this.log.info(`Current Version: ...${currentVersion}`));
     let commits: Commit[] = [];
