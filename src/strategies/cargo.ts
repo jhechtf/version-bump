@@ -1,11 +1,5 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-import {
-  inject,
-  injectable,
-  inversify,
-  readLines,
-  resolve,
-} from '../../deps.ts';
+import { inject, injectable, readLines, resolve } from '../../deps.ts';
 import { Git } from '../git.ts';
 
 @injectable()
