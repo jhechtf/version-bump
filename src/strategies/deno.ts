@@ -81,8 +81,6 @@ export default class DenoTsStrategy extends VersionStrategy {
         ? tag.slice(args.versionPrefix.length).trim()
         : tag.trim();
     }
-    throw new Deno.errors.NotFound(
-      'Cannot find version export in ' + file + 'or fallback git tags',
-    );
+    return '';
   }
 }
