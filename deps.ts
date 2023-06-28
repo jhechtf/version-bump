@@ -16,7 +16,13 @@ export const unmanaged = _unmanaged as () => (
   targetKey: string | undefined,
   index: number,
 ) => void;
-export { Container, inject, injectable } from 'https://esm.sh/inversify@6.0.1';
+export {
+  Container,
+  inject,
+  injectable,
+  type interfaces,
+  postConstruct,
+} from 'https://esm.sh/inversify@6.0.1';
 
 export {
   bgGreen,

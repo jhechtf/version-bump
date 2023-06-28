@@ -1,4 +1,4 @@
-import { Args, inversify, resolve, toFileUrl } from './deps.ts';
+import { Args, resolve, toFileUrl } from './deps.ts';
 import './src/cwd.ts';
 
 import { container } from './src/container.ts';
@@ -22,6 +22,7 @@ import { GitProvider, GitProviderBuildable } from './src/gitProvider.ts';
 import HistoricCli from './src/historic.ts';
 import './logger.ts';
 import { normalizeImport } from './src/util.ts';
+import ConfigLoader from './src/config.ts';
 
 /**
  * 1. Check which preset we are using, load if necessary.
@@ -29,6 +30,8 @@ import { normalizeImport } from './src/util.ts';
  * 3. Check the VersionStrategy, load id necessary.
  */
 
+const configLoader = container.get(ConfigLoader);
+await configLoader.loadConfig();
 // We unfortunately need theese two things out here
 const args = container.get<Args>('args');
 const git = container.get<Git>(Git);
@@ -38,6 +41,7 @@ if (!gitRemote) {
   Deno.exit(1);
 }
 
+container.bind<ConfigLoader>(ConfigLoader).to(ConfigLoader);
 container.bind<HistoricCli>(HistoricCli).to(HistoricCli);
 
 // Parse this bitch
