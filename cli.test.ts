@@ -7,8 +7,7 @@ import {
 } from './deps.ts';
 import args from './args.ts';
 
-import { runCommand } from './src/util.ts';
-import { Commit } from './src/commit.ts';
+import { runCommand, UnsavedCommit } from './src/util.ts';
 
 const strategies = [
   'deno',
@@ -17,10 +16,6 @@ const strategies = [
   'historic',
   'multiple-changelog-runs',
 ] as const;
-
-type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
-  tag?: string;
-};
 
 const GIT_USERNAME = 'Testing';
 const GIT_EMAIL = 'testing@email.com';

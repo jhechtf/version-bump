@@ -1,6 +1,11 @@
 import { dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
 import { Commit } from './commit.ts';
 
+export type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
+  author?: string;
+  tag?: string;
+};
+
 export async function fileExists(path: string): Promise<boolean> {
   try {
     await Deno.stat(path);
@@ -132,7 +137,7 @@ export async function setupPackage(
 
 export async function fakeGitHistory(
   gitRoot: string,
-  commits: Omit<Commit, 'sha'>[],
+  commits: UnsavedCommit[],
 ) {
   /**
    * 1. Iterate over the commits
@@ -174,7 +179,6 @@ export async function generateFakeVersionSource(
   type: 'deno' | 'node' | 'cargo' = 'deno',
   version = '0.1.0',
 ) {
-  console.info(location, version);
   let contents = '';
   switch (type) {
     case 'node':
