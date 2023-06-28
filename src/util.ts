@@ -181,6 +181,7 @@ export async function generateFakeVersionSource(
 ) {
   let contents = '';
   switch (type) {
+    // Node stuff
     case 'node':
       contents = JSON.stringify({ version });
       break;
@@ -190,11 +191,12 @@ export async function generateFakeVersionSource(
       break;
     // Deno is the default
     default:
-      // do stuff
-      await Deno.writeTextFile(
-        `${location}/deps.ts`,
-        `export const VERSION = '${version}';`,
-      );
+      contents = `export const VERSION = '${version}';`;
       break;
-  }
+    }
+    // Write text file
+    await Deno.writeTextFile(
+      `${location}/deps.ts`,
+      contents,
+    );
 }

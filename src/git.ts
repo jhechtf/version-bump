@@ -1,4 +1,4 @@
-import { type Args, inject, injectable, inversify } from '../deps.ts';
+import { inject, injectable } from '../deps.ts';
 import { Commit } from './commit.ts';
 
 export const COMMIT_DELIMITER = '------';
