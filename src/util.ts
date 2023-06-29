@@ -1,4 +1,4 @@
-import { dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
+import { Args, dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
 import { Commit } from './commit.ts';
 
 export type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
@@ -195,4 +195,11 @@ export async function generateFakeVersionSource(
     `${location}/deps.ts`,
     contents,
   );
+}
+
+export async function postTestCleanup(args: Args) {
+  if(!args.skipTeardown) {
+    await emptyDir('packages');
+    await Deno.remove('packages', {recursive: true});
+  }
 }

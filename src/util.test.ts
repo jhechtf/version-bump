@@ -1,6 +1,7 @@
 import {
   capitalize,
   fileExists,
+  normalizeImport,
   resolveFileImportUrl,
   runCommand,
 } from './util.ts';
@@ -81,4 +82,9 @@ Deno.test('Resolve file url', () => {
 
 Deno.test('runCommand utilitiy', async () => {
   await assertRejects(() => runCommand('ls', ['not-gonna-find-this']));
+});
+
+Deno.test('NormalizeImport', () => {
+  const f = normalizeImport('file:///something/something/dark-side.png');
+  assertEquals(f, 'file:///something/something/dark-side.png');
 });
