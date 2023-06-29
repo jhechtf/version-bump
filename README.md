@@ -11,6 +11,8 @@ Version Bump has moved from TSyringe to Inversify. The move was done largely as
 an effort to enable Version Bump to run in versions of Deno that used TypeScript
 5+, which made some changes to decorators that broke TSyringe.
 
+For Version Bump `>=2.0.0` you will need to be on at least `deno>=1.31.0`.
+
 ## Notes
 
 **VERSION 0.2.0 IS BROKEN. DO _NOT_ USE**

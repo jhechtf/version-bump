@@ -271,7 +271,7 @@ Deno.test('CLI Test', async (t) => {
 
       const packageContent = JSON.parse(
         await Deno.readTextFile('packages/github.com/node/package.json'),
-      // deno-lint-ignore no-explicit-any
+        // deno-lint-ignore no-explicit-any
       ) as any;
 
       assertEquals(

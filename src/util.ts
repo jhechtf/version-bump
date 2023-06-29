@@ -1,4 +1,4 @@
-import { dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
+import { Args, dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
 import { Commit } from './commit.ts';
 
 export type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
@@ -63,24 +63,19 @@ export async function runCommand(
   command: string,
   args: string[] = [],
   cwd = Deno.cwd(),
-): Promise<{ code: number; stdout: string }> {
-  const prefix = Deno.build.os === 'windows' ? ['cmd', '/c'] : [];
-  const commandRun = Deno.run({
-    cmd: prefix.concat([
-      command,
-      ...args,
-    ]),
-    stderr: 'piped',
-    stdout: 'piped',
-    stdin: 'null',
+): Promise<{ code: number; stdout: string; stderr: string }> {
+  const commandInst = new Deno.Command(command, {
+    args,
     cwd,
   });
 
+  const { code, stderr, stdout } = await commandInst.output();
+
   const decoder = new TextDecoder();
-  const { code } = await commandRun.status();
-  const errorOutput = decoder.decode(await commandRun.stderrOutput());
-  const output = decoder.decode(await commandRun.output());
-  commandRun.close();
+
+  const errorOutput = decoder.decode(stderr);
+  const output = decoder.decode(stdout);
+
   if (code !== 0) {
     throw new Error(errorOutput);
   }
@@ -88,6 +83,7 @@ export async function runCommand(
   return {
     stdout: output,
     code,
+    stderr: errorOutput,
   };
 }
 
@@ -193,10 +189,17 @@ export async function generateFakeVersionSource(
     default:
       contents = `export const VERSION = '${version}';`;
       break;
-    }
-    // Write text file
-    await Deno.writeTextFile(
-      `${location}/deps.ts`,
-      contents,
-    );
+  }
+  // Write text file
+  await Deno.writeTextFile(
+    `${location}/deps.ts`,
+    contents,
+  );
+}
+
+export async function postTestCleanup(args: Args) {
+  if (!args.skipTeardown) {
+    await emptyDir('packages');
+    await Deno.remove('packages', { recursive: true });
+  }
 }
