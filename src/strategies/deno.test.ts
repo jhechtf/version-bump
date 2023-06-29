@@ -1,5 +1,5 @@
-import { describe, it, beforeAll, afterAll, assertEquals } from '../../deps.ts';
-import { setupPackage, fakeGitHistory, postTestCleanup } from 'util';
+import { afterAll, assertEquals, beforeAll, describe, it } from '../../deps.ts';
+import { fakeGitHistory, postTestCleanup, setupPackage } from 'util';
 import { container } from '../container.ts';
 import args from '../../args.ts';
 import { Git } from '../git.ts';
@@ -7,8 +7,14 @@ import { VersionStrategy } from '../versionStrategy.ts';
 import DenoVersionStrategy from './deno.ts';
 
 beforeAll(async () => {
-  const path = await setupPackage('deno-vs-test', 'git@github.com:fake/repo.git');
-  await Deno.writeTextFile(`${path}/deps.ts`, 'export const VERSION = \'0.1.1\'');
+  const path = await setupPackage(
+    'deno-vs-test',
+    'git@github.com:fake/repo.git',
+  );
+  await Deno.writeTextFile(
+    `${path}/deps.ts`,
+    'export const VERSION = \'0.1.1\'',
+  );
 
   await fakeGitHistory(
     path,
@@ -16,21 +22,24 @@ beforeAll(async () => {
       {
         subject: 'chore: Initial commit',
         tag: '0.1.1',
-      }
-    ]
+      },
+    ],
   );
 
-  const path2 = await setupPackage('deno-vs-test-empty', 'git@github.com:fake/repo.git');
-  
+  const path2 = await setupPackage(
+    'deno-vs-test-empty',
+    'git@github.com:fake/repo.git',
+  );
+
   await fakeGitHistory(
     path2,
     [
       {
         subject: 'chore: Initial commit',
-        tag: '0.1.1'
-      }
-    ]
-  )
+        tag: '0.1.1',
+      },
+    ],
+  );
 
   container.bind<Git>(Git).to(Git);
   container.bind<VersionStrategy>(VersionStrategy).to(DenoVersionStrategy);
@@ -72,6 +81,4 @@ describe('Deno Version Strategy', () => {
     const current = await vs.getCurrentVersion();
     assertEquals(current, '1.2.3');
   });
-  
-
-})
+});

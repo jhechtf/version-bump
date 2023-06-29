@@ -198,8 +198,8 @@ export async function generateFakeVersionSource(
 }
 
 export async function postTestCleanup(args: Args) {
-  if(!args.skipTeardown) {
+  if (!args.skipTeardown) {
     await emptyDir('packages');
-    await Deno.remove('packages', {recursive: true});
+    await Deno.remove('packages', { recursive: true });
   }
 }
