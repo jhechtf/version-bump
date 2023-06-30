@@ -193,10 +193,10 @@ export async function generateFakeVersionSource(
     default:
       contents = `export const VERSION = '${version}';`;
       break;
-    }
-    // Write text file
-    await Deno.writeTextFile(
-      `${location}/deps.ts`,
-      contents,
-    );
+  }
+  // Write text file
+  await Deno.writeTextFile(
+    `${location}/deps.ts`,
+    contents,
+  );
 }

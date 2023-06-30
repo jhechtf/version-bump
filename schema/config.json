@@ -18,8 +18,8 @@
       "type": "string",
       "description": "Git Preset to determine the next bump in the version"
     },
-    "changelogWriter":{
-      "type":"string",
+    "changelogWriter": {
+      "type": "string",
       "description": "Modify the format the writes the CHANGELOG.md file"
     },
     "changelogPath": {

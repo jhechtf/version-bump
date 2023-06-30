@@ -5,7 +5,8 @@ import {
   bgRed,
   bgYellow,
   inject,
-  injectable, resolve
+  injectable,
+  resolve,
 } from '../deps.ts';
 import { VersionStrategy } from './versionStrategy.ts';
 import { Git } from './git.ts';
