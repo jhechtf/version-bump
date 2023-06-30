@@ -1,11 +1,5 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-import {
-  inject,
-  injectable,
-  inversify,
-  readLines,
-  resolve,
-} from '../../deps.ts';
+import { inject, injectable, readLines, resolve } from '../../deps.ts';
 import { Git } from '../git.ts';
 
 @injectable()
@@ -18,7 +12,7 @@ export default class CargoStrategy extends VersionStrategy {
   }
 
   async bump(newVersion: string) {
-    let file = await Deno.readTextFile(resolve(this.cwd, 'Cargo.toml'));
+    const file = await Deno.readTextFile(resolve(this.cwd, 'Cargo.toml'));
     let header = '';
     const split = file.split('\n');
 
@@ -27,7 +21,7 @@ export default class CargoStrategy extends VersionStrategy {
         header = line.trim();
       }
       if (header === '[package]' && line.includes('version = ')) {
-        let newLine = line.replace(/".*"/, `"${newVersion}"`);
+        const newLine = line.replace(/".*"/, `"${newVersion}"`);
         split[i] = newLine;
         break;
       }
