@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "https://deno.land/x/version_bump/schema/config.json",
+  "title": "Version Bump Config",
+  "description": "Version bump config set into a .vbump.json file",
+  "type": "object",
+  "properties": {
+    "versionStrategy": {
+      "type": "string",
+      "description": "The version strategy to use - can be TS or JS"
+    },
+    "allowEmpty": {
+      "type": "boolean",
+      "description": "Should we allow empty things?",
+      "default": false
+    },
+    "preset": {
+      "type": "string",
+      "description": "Git Preset to determine the next bump in the version"
+    },
+    "changelogWriter":{
+      "type":"string",
+      "description": "Modify the format the writes the CHANGELOG.md file"
+    },
+    "changelogPath": {
+      "type": "string",
+      "description": "the filename you would like the use for the generated changelog. ",
+      "default": "CHANGELOG.md"
+    },
+    "gitProvider": {
+      "type": "string",
+      "description": "The git provider to use. When not provided we use our best guest to determine your host."
+    }
+  }
+}
