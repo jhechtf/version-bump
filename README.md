@@ -29,10 +29,28 @@ definitions for certain types of decorators.
 
 ### Things to come
 
-1. A configuration file spec so that the user doesn't need to supply every
-   argument to the command line.
+Nothing so far, but feel free to file a new
+[Issue](https://github.com/jhechtf/version-bump/issues) in the Github repo to
+request something
 
 ## Installation and Usage
+
+### Configuration File
+
+If you create a `.vbump.json` file in the same directory where you would run
+`version-bump`, then you can use it to hold configuration options so that you
+don't have to pass in the information every time you run the CLI.
+
+The values you can pass in the file are documented in the schema JSON noted
+below.
+
+```jsonc
+{
+  "$schema": "https://deno.land/x/version_bump/schema/config.json",
+  // Could also be set to a local file like "./custom-preset".
+  "preset": "https://some-host.com/custom-preset.ts"
+}
+```
 
 ### As a task
 
