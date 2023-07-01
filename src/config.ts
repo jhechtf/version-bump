@@ -29,7 +29,9 @@ export default class ConfigLoader {
     const configPath = `${this.cwd}/${this.args.config}`;
     this.log.debug('Config path', configPath);
     const fileContents = await Deno.readTextFile(configPath)
-      .then((res) => JSON.parse(res) as Partial<ConfigArgs>)
+      .then((res) =>
+        JSON.parse(res.replace(/^\s*\/\/.*$/mg, '')) as Partial<ConfigArgs>
+      )
       .catch(() => ({}));
 
     const newArgs = Object.assign(this.args, fileContents);
