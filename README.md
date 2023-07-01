@@ -100,7 +100,6 @@ jobs:
           # Gotta set the fetch depth to 0 so that it fetches everything
           fetch-depth: 0
       - uses: denoland/setup-deno@v1
-      - run: echo $TEST_REF;
       - run: git config user.name "version-bot" && git config user.email "your-email+bot@gmail.com"
       - run: deno task version-bump
       - run: git push && git push --tags

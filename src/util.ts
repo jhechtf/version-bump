@@ -176,23 +176,27 @@ export async function generateFakeVersionSource(
   version = '0.1.0',
 ) {
   let contents = '';
+  let filename = '';
   switch (type) {
     // Node stuff
     case 'node':
       contents = JSON.stringify({ version });
+      filename = 'package.json';
       break;
     case 'cargo':
       // Cargo.toml
       contents = `[package]\nversion="${version}"[test]something="else"`;
+      filename = 'Cargo.toml';
       break;
     // Deno is the default
     default:
       contents = `export const VERSION = '${version}';`;
+      filename = 'deps.ts';
       break;
   }
   // Write text file
   await Deno.writeTextFile(
-    `${location}/deps.ts`,
+    `${location}/${filename}`,
     contents,
   );
 }
