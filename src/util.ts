@@ -1,4 +1,10 @@
-import { dirname, emptyDir, ensureDir } from '../deps.ts';
+import { Args, dirname, emptyDir, resolve, toFileUrl } from '../deps.ts';
+import { Commit } from './commit.ts';
+
+export type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
+  author?: string;
+  tag?: string;
+};
 
 export async function fileExists(path: string): Promise<boolean> {
   try {
@@ -57,24 +63,19 @@ export async function runCommand(
   command: string,
   args: string[] = [],
   cwd = Deno.cwd(),
-): Promise<{ code: number; stdout: string }> {
-  const prefix = Deno.build.os === 'windows' ? ['cmd', '/c'] : [];
-  const commandRun = Deno.run({
-    cmd: prefix.concat([
-      command,
-      ...args,
-    ]),
-    stderr: 'piped',
-    stdout: 'piped',
-    stdin: 'null',
+): Promise<{ code: number; stdout: string; stderr: string }> {
+  const commandInst = new Deno.Command(command, {
+    args,
     cwd,
   });
 
+  const { code, stderr, stdout } = await commandInst.output();
+
   const decoder = new TextDecoder();
-  const { code } = await commandRun.status();
-  const errorOutput = decoder.decode(await commandRun.stderrOutput());
-  const output = decoder.decode(await commandRun.output());
-  commandRun.close();
+
+  const errorOutput = decoder.decode(stderr);
+  const output = decoder.decode(stdout);
+
   if (code !== 0) {
     throw new Error(errorOutput);
   }
@@ -82,10 +83,16 @@ export async function runCommand(
   return {
     stdout: output,
     code,
+    stderr: errorOutput,
   };
 }
 
-async function setupPackage(name: string) {
+export async function setupPackage(
+  name: string,
+  origin = 'ssh://github.com:fake/repo,git',
+  user = 'Fake Name',
+  email = 'fake@test.com',
+) {
   const filename = `packages/${name}`;
 
   // Ensure the dir is there
@@ -103,5 +110,100 @@ async function setupPackage(name: string) {
     filename,
   );
 
+  await runCommand(
+    'git',
+    ['remote', 'add', 'origin', origin],
+    filename,
+  );
+
+  await runCommand(
+    'git',
+    ['config', 'user.name', user],
+    filename,
+  );
+
+  await runCommand(
+    'git',
+    ['config', 'user.email', email],
+    filename,
+  );
+
   return filename;
+}
+
+export async function fakeGitHistory(
+  gitRoot: string,
+  commits: UnsavedCommit[],
+) {
+  /**
+   * 1. Iterate over the commits
+   * 2. create a new empty commit every time with the filled out properties.
+   * 3. return true?
+   */
+  for (const commit of commits) {
+    const optional = commit.author ? ['--author', commit.author] : [];
+    await runCommand(
+      'git',
+      ['commit', '-m', `${commit.subject}`, '--allow-empty', ...optional],
+      gitRoot,
+    );
+
+    if (commit.tag) {
+      await runCommand(
+        'git',
+        ['tag', commit.tag],
+        gitRoot,
+      );
+    }
+  }
+  return true;
+}
+
+export function normalizeImport(str: string): string {
+  if (str.startsWith('file:') || /^https?:/.test(str)) return str;
+  return toFileUrl(resolve(str)).href;
+}
+
+/**
+ * @description Creates a fake version source file in the `location` direction of the corresponding type of a package.json,
+ * deps.ts, or Cargo.toml file
+ * @param location file location where the package is located, and where the appropriate file should be made.
+ * @param type The type of package this is going to be.
+ */
+export async function generateFakeVersionSource(
+  location: string,
+  type: 'deno' | 'node' | 'cargo' = 'deno',
+  version = '0.1.0',
+) {
+  let contents = '';
+  let filename = '';
+  switch (type) {
+    // Node stuff
+    case 'node':
+      contents = JSON.stringify({ version });
+      filename = 'package.json';
+      break;
+    case 'cargo':
+      // Cargo.toml
+      contents = `[package]\nversion="${version}"[test]something="else"`;
+      filename = 'Cargo.toml';
+      break;
+    // Deno is the default
+    default:
+      contents = `export const VERSION = '${version}';`;
+      filename = 'deps.ts';
+      break;
+  }
+  // Write text file
+  await Deno.writeTextFile(
+    `${location}/${filename}`,
+    contents,
+  );
+}
+
+export async function postTestCleanup(args: Args) {
+  if (!args.skipTeardown) {
+    await emptyDir('packages');
+    await Deno.remove('packages', { recursive: true });
+  }
 }

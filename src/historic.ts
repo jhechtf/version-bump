@@ -1,4 +1,11 @@
-import { type Args, inject, injectable, readLines, resolve } from '../deps.ts';
+import {
+  type Args,
+  inject,
+  injectable,
+  inversify,
+  readLines,
+  resolve,
+} from '../deps.ts';
 
 import { Runnable } from './runnable.ts';
 import { Git } from './git.ts';

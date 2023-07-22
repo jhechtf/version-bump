@@ -11,6 +11,7 @@ export const argDefaults = {
   dryRun: false,
   gitProvider: '',
   logLevel: 'ERROR',
+  config: '.vbump.json',
   // Below this pertains to historic Changelog builds
   historic: false,
   retag: true,

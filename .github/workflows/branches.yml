@@ -3,17 +3,21 @@ on:
 
 jobs:
   test:
+    name: Deno unit tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
-      - run: deno test -A --no-check
+      - run: deno task test:coverage
   format:
+    name: Format Checker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: denoland/setup-deno@v1
       - run: deno fmt --check
