@@ -3,7 +3,7 @@ import {
   GenerateCommitArgs,
   GitConvention,
 } from '../gitConvention.ts';
-import { injectable } from '../../deps.ts';
+import { injectable, inversify } from '../../deps.ts';
 
 @injectable()
 export default class TestPreset extends GitConvention {

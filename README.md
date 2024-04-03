@@ -5,6 +5,14 @@ We bumpin' versions like it's 1999.
 Inspiration for this project comes from
 [Standard Version](https://github.com/conventional-changelog/standard-version).
 
+## Version Bump 2.0
+
+Version Bump has moved from TSyringe to Inversify. The move was done largely as
+an effort to enable Version Bump to run in versions of Deno that used TypeScript
+5+, which made some changes to decorators that broke TSyringe.
+
+For Version Bump `>=2.0.0` you will need to be on at least `deno>=1.31.0`.
+
 ## Notes
 
 **VERSION 0.2.0 IS BROKEN. DO _NOT_ USE**
@@ -21,12 +29,28 @@ definitions for certain types of decorators.
 
 ### Things to come
 
-1. A configuration file spec so that the user doesn't need to supply every
-   argument to the command line.
-2. Documentation on how to create custom version bump strategies, git providers,
-   presets, and even the changelog writer.
+Nothing so far, but feel free to file a new
+[Issue](https://github.com/jhechtf/version-bump/issues) in the Github repo to
+request something
 
 ## Installation and Usage
+
+### Configuration File
+
+If you create a `.vbump.json` file in the same directory where you would run
+`version-bump`, then you can use it to hold configuration options so that you
+don't have to pass in the information every time you run the CLI.
+
+The values you can pass in the file are documented in the schema JSON noted
+below.
+
+```jsonc
+{
+  "$schema": "https://deno.land/x/version_bump/schema/config.json",
+  // Could also be set to a local file like "./custom-preset".
+  "preset": "https://some-host.com/custom-preset.ts"
+}
+```
 
 ### As a task
 
@@ -76,7 +100,6 @@ jobs:
           # Gotta set the fetch depth to 0 so that it fetches everything
           fetch-depth: 0
       - uses: denoland/setup-deno@v1
-      - run: echo $TEST_REF;
       - run: git config user.name "version-bot" && git config user.email "your-email+bot@gmail.com"
       - run: deno task version-bump
       - run: git push && git push --tags

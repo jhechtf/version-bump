@@ -1,9 +1,7 @@
 import * as logger from 'https://deno.land/std@0.132.0/log/mod.ts';
-import { type Args, container } from './deps.ts';
+import { container } from './src/container.ts';
 
-import './args.ts';
-
-const args = container.resolve<Args>('args');
+import args from './args.ts';
 
 await logger.setup({
   handlers: {
@@ -29,9 +27,7 @@ await logger.setup({
   },
 });
 
-container.register('logger', {
-  useValue: logger,
-});
+container.bind<LoggerInstance>('logger').toConstantValue(logger);
 
 export type LoggerInstance = typeof logger;
 

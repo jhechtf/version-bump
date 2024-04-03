@@ -5,11 +5,9 @@ import {
   assertRejects,
   emptyDir,
 } from './deps.ts';
-import _cli from './cli.ts';
 import args from './args.ts';
 
-import { runCommand } from './src/util.ts';
-import { Commit } from './src/commit.ts';
+import { runCommand, UnsavedCommit } from './src/util.ts';
 
 const strategies = [
   'deno',
@@ -18,10 +16,6 @@ const strategies = [
   'historic',
   'multiple-changelog-runs',
 ] as const;
-
-type UnsavedCommit = Omit<Commit, 'sha' | 'author' | 'tag'> & {
-  tag?: string;
-};
 
 const GIT_USERNAME = 'Testing';
 const GIT_EMAIL = 'testing@email.com';
@@ -277,6 +271,7 @@ Deno.test('CLI Test', async (t) => {
 
       const packageContent = JSON.parse(
         await Deno.readTextFile('packages/github.com/node/package.json'),
+        // deno-lint-ignore no-explicit-any
       ) as any;
 
       assertEquals(

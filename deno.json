@@ -1,7 +1,13 @@
 {
   "fmt": {
     "singleQuote": true,
-    "exclude": ["CHANGELOG.md"]
+    "exclude": [
+      "CHANGELOG.md",
+      "packages/**/*"
+    ]
+  },
+  "imports": {
+    "util": "./src/util.ts"
   },
   "lock": false,
   "tasks": {
@@ -13,6 +19,6 @@
     "version-bump": "deno run -A cli.ts"
   },
   "compilerOptions": {
-    "emitDecoratorMetadata": true
+    "experimentalDecorators": true
   }
 }

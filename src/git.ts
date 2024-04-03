@@ -1,5 +1,6 @@
-import { type Args, inject, injectable } from '../deps.ts';
+import { inject, injectable } from '../deps.ts';
 import { Commit } from './commit.ts';
+import { runCommand } from './util.ts';
 
 export const COMMIT_DELIMITER = '------';
 
@@ -149,13 +150,15 @@ export class Git {
     if (!exact) {
       args.splice(-1, 1);
     }
-    const { code, stderr, stdout } = await this.run(
+    const { stdout } = await this.run(
       'describe',
       ...args,
-    );
-    if (code !== 0) {
-      return stderr ?? '';
-    }
+    ).catch((err) => ({
+      code: 1,
+      stdout: '',
+      stderr: err.message,
+    }));
+
     if (stdout) {
       return stdout.trim();
     }
@@ -204,31 +207,24 @@ export class Git {
    * @returns the stdout or stderr from the command output, along with the code for this run.
    */
   async run(command: string, ...args: string[]): Promise<CommandOutput> {
-    const cmd = Deno.run({
-      cmd: this.prefix.concat([
-        'git',
+    const { code, stdout: output, stderr: errout } = await runCommand(
+      'git',
+      [
         command,
         ...args,
-      ]),
-      cwd: this.cwd,
-      stderr: 'piped',
-      stdout: 'piped',
-      stdin: 'null',
-    });
-    const { code } = await cmd.status();
+      ],
+      this.cwd,
+    );
 
-    const output = await cmd.output();
-    const errout = await cmd.stderrOutput();
-    cmd.close();
     if (code !== 0) {
       return {
-        stderr: this.#decoder.decode(errout),
+        stderr: errout,
         code,
       };
     }
 
     return {
-      stdout: this.#decoder.decode(output),
+      stdout: output,
       code,
     };
   }
