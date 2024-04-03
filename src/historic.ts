@@ -40,7 +40,7 @@ export default class HistoricCli implements Runnable {
       console.info(this.log.info('CHANGELOG File already exists!'));
       console.info(
         this.log.info(
-          'Continuing will delete this file\'s contents: ' + changelogFile,
+          "Continuing will delete this file's contents: " + changelogFile,
         ),
       );
       console.info(this.log.info('Are you sure?(y/n)'));

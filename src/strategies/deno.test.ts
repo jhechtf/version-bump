@@ -13,7 +13,7 @@ beforeAll(async () => {
   );
   await Deno.writeTextFile(
     `${path}/deps.ts`,
-    'export const VERSION = \'0.1.1\'',
+    "export const VERSION = '0.1.1'",
   );
 
   await fakeGitHistory(
@@ -74,7 +74,7 @@ describe('Deno Version Strategy', () => {
     assertEquals(current, '2.0.0');
   });
 
-  it('Creates a deps.ts file when there isn\'t one', async () => {
+  it("Creates a deps.ts file when there isn't one", async () => {
     container.rebind('cwd').toConstantValue('packages/deno-vs-test-empty');
     const vs = container.get(VersionStrategy);
     await vs.bump('1.2.3');
