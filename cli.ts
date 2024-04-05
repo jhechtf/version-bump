@@ -9,6 +9,7 @@ import {
 import DenoVersionStrategy from './src/strategies/deno.ts';
 import DenoJsonStrategy from './src/strategies/deno.json.ts';
 import JsrStrategy from './src/strategies/jsr.ts';
+
 import { VersionArgsCli } from './src/versionBumpCli.ts';
 import NodeStrategy from './src/strategies/node.ts';
 import CargoStrategy from './src/strategies/cargo.ts';
@@ -94,6 +95,7 @@ container.bind<VersionStrategy>(VersionStrategy).to(CargoStrategy)
   .when((r) =>
     r.parentContext.container.get<Args>('args').versionStrategy === 'cargo'
   );
+
 
 container.bind<VersionStrategy>(VersionStrategy).to(JsrStrategy)
   .when(r => r.parentContext.container.get<Args>('args').versionStrategy === 'jsr')
