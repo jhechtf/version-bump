@@ -7,6 +7,9 @@ import {
   VersionStrategyConstructable,
 } from './src/versionStrategy.ts';
 import DenoVersionStrategy from './src/strategies/deno.ts';
+import DenoJsonStrategy from './src/strategies/deno.json.ts';
+import JsrStrategy from './src/strategies/jsr.ts';
+
 import { VersionArgsCli } from './src/versionBumpCli.ts';
 import NodeStrategy from './src/strategies/node.ts';
 import CargoStrategy from './src/strategies/cargo.ts';
@@ -93,7 +96,19 @@ container.bind<VersionStrategy>(VersionStrategy).to(CargoStrategy)
     r.parentContext.container.get<Args>('args').versionStrategy === 'cargo'
   );
 
-if (!['deno', 'node', 'cargo'].includes(args.versionStrategy)) {
+container.bind<VersionStrategy>(VersionStrategy).to(JsrStrategy)
+  .when((r) =>
+    r.parentContext.container.get<Args>('args').versionStrategy === 'jsr'
+  );
+
+container.bind<VersionStrategy>(VersionStrategy).to(DenoJsonStrategy)
+  .when((r) =>
+    r.parentContext.container.get<Args>('args').versionStrategy === 'deno-json'
+  );
+
+if (
+  !['deno', 'node', 'cargo', 'jsr', 'deno-json'].includes(args.versionStrategy)
+) {
   // If a full URL is given, then this will house its value.
   // Otherwise this will be the file system.
   const url = args.versionStrategy.startsWith('file:') ||
