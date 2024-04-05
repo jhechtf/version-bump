@@ -29,7 +29,7 @@ export default class JsrStrategy extends VersionStrategy {
       write: true,
       read: true,
     });
-    
+
     const lines: string[] = [];
     for await (let line of readLines(jsrFile)) {
       if (JsrStrategy.VERSION_REGEX.test(line)) {
@@ -41,10 +41,9 @@ export default class JsrStrategy extends VersionStrategy {
       lines.push(line);
     }
 
-    if(lines.length === 0) {
+    if (lines.length === 0) {
       lines.push(`"version": "${newVersion}"`);
     }
-
 
     try {
       await Deno.writeTextFile(jsrJson, lines.join('\n'));
@@ -72,7 +71,6 @@ export default class JsrStrategy extends VersionStrategy {
           }
         }
       }
-
     }
 
     // Or we check tags

@@ -42,7 +42,7 @@ export default class DenoJsonStrategy extends VersionStrategy {
       lines.push(line);
     }
 
-    if(lines.length === 0) {
+    if (lines.length === 0) {
       lines.push(`"version": "${newVersion}"`);
     }
 

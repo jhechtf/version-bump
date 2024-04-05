@@ -96,14 +96,19 @@ container.bind<VersionStrategy>(VersionStrategy).to(CargoStrategy)
     r.parentContext.container.get<Args>('args').versionStrategy === 'cargo'
   );
 
-
 container.bind<VersionStrategy>(VersionStrategy).to(JsrStrategy)
-  .when(r => r.parentContext.container.get<Args>('args').versionStrategy === 'jsr')
+  .when((r) =>
+    r.parentContext.container.get<Args>('args').versionStrategy === 'jsr'
+  );
 
 container.bind<VersionStrategy>(VersionStrategy).to(DenoJsonStrategy)
-  .when(r => r.parentContext.container.get<Args>('args').versionStrategy === 'deno-json')
+  .when((r) =>
+    r.parentContext.container.get<Args>('args').versionStrategy === 'deno-json'
+  );
 
-if (!['deno', 'node', 'cargo', 'jsr', 'deno-json'].includes(args.versionStrategy)) {
+if (
+  !['deno', 'node', 'cargo', 'jsr', 'deno-json'].includes(args.versionStrategy)
+) {
   // If a full URL is given, then this will house its value.
   // Otherwise this will be the file system.
   const url = args.versionStrategy.startsWith('file:') ||

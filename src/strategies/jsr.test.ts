@@ -1,4 +1,11 @@
-import { afterAll, afterEach, assertEquals, beforeAll, describe, it } from '../../deps.ts';
+import {
+  afterAll,
+  afterEach,
+  assertEquals,
+  beforeAll,
+  describe,
+  it,
+} from '../../deps.ts';
 import { container } from '../container.ts';
 import { fakeGitHistory, postTestCleanup, setupPackage } from 'util';
 import args from '../../args.ts';
@@ -7,25 +14,35 @@ import { Git } from '../git.ts';
 import JsrStrategy from './jsr.ts';
 
 beforeAll(async () => {
-  const path = await setupPackage('jsr-vs-test', 'git@github.com:fake/repo.git');
+  const path = await setupPackage(
+    'jsr-vs-test',
+    'git@github.com:fake/repo.git',
+  );
   await Deno.writeTextFile(
     `${path}/jsr.json`,
-    JSON.stringify({
-      version: '0.1.0',
-      name: '@test/something',
-      keywords: ['testing']
-    }, null, 2)
+    JSON.stringify(
+      {
+        version: '0.1.0',
+        name: '@test/something',
+        keywords: ['testing'],
+      },
+      null,
+      2,
+    ),
   );
 
-  const path2 = await setupPackage('jsr-vs-test-empty', 'git@github.com:fake/repo.git');
+  const path2 = await setupPackage(
+    'jsr-vs-test-empty',
+    'git@github.com:fake/repo.git',
+  );
   await fakeGitHistory(
-    path2, 
+    path2,
     [
       {
         subject: 'chore: Initial commit',
-        tag: '0.1.1'
-      }
-    ]
+        tag: '0.1.1',
+      },
+    ],
   );
 
   await fakeGitHistory(
@@ -33,9 +50,9 @@ beforeAll(async () => {
     [
       {
         subject: 'chore: Initial commit',
-        tag: '0.1.0'
-      }
-    ]
+        tag: '0.1.0',
+      },
+    ],
   );
 
   container.bind<Git>(Git).to(Git);
@@ -73,7 +90,7 @@ describe('JSR Version Strategy', () => {
     assertEquals(current, '2.0.0');
   });
 
-  it('Creates a jsr.json file when there isn\'t one', async () => {
+  it("Creates a jsr.json file when there isn't one", async () => {
     container.bind('cwd').toConstantValue('packages/jsr-vs-test-empty');
     const vs = container.get(VersionStrategy);
     await vs.bump('1.2.3');
