@@ -64,12 +64,12 @@ export default class DenoTsStrategy extends VersionStrategy {
         if (this.FIND.test(line)) {
           const matches = this.FIND.exec(line);
           if (matches?.groups?.currentVersion) {
-            Deno.close(fileRef.rid);
+            fileRef.close();
             return matches.groups.currentVersion;
           }
         }
       }
-      Deno.close(fileRef.rid);
+      fileRef.close();
     } catch (e) {
       console.info(e);
     }

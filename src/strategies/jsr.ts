@@ -1,9 +1,4 @@
 import { VersionStrategy } from '../versionStrategy.ts';
-
-import { fileExists } from '../util.ts';
-
-import { Git } from '../git.ts';
-
 import {
   type Args,
   inject,
@@ -12,9 +7,11 @@ import {
   resolve,
 } from '../../deps.ts';
 import args from '../../args.ts';
+import { Git } from '../git.ts';
+import { fileExists } from 'util';
 
 @injectable()
-export default class NodeStrategy extends VersionStrategy {
+export default class JsrStrategy extends VersionStrategy {
   static VERSION_REGEX = /"version":\s?"(?<currentVersion>.*)"\s?(?<ending>,?)/;
 
   constructor(
@@ -25,25 +22,33 @@ export default class NodeStrategy extends VersionStrategy {
     super();
   }
 
-  async bump(newVersion: string) {
-    const packageJson = resolve(this.cwd, 'package.json');
-    const packageOpen = await Deno.open(packageJson);
+  async bump(newVersion: string): Promise<boolean> {
+    const jsrJson = resolve(this.cwd, 'jsr.json');
+    const jsrFile = await Deno.open(jsrJson, {
+      create: true,
+      write: true,
+      read: true,
+    });
+    
     const lines: string[] = [];
-
-    for await (let line of readLines(packageOpen)) {
-      if (NodeStrategy.VERSION_REGEX.test(line)) {
+    for await (let line of readLines(jsrFile)) {
+      if (JsrStrategy.VERSION_REGEX.test(line)) {
         line = line.replace(
-          NodeStrategy.VERSION_REGEX,
+          JsrStrategy.VERSION_REGEX,
           `"version": "${newVersion}"$2`,
         );
       }
       lines.push(line);
     }
 
-    packageOpen.close();
+    if(lines.length === 0) {
+      lines.push(`"version": "${newVersion}"`);
+    }
+
 
     try {
-      await Deno.writeTextFile(packageJson, lines.join('\n'));
+      await Deno.writeTextFile(jsrJson, lines.join('\n'));
+      jsrFile.close();
       return true;
     } catch (e) {
       console.error(e);
@@ -51,25 +56,27 @@ export default class NodeStrategy extends VersionStrategy {
     }
   }
 
-  async getCurrentVersion() {
-    const filePath = resolve(this.cwd, 'package.json');
+  async getCurrentVersion(): Promise<string> {
+    const filePath = resolve(this.cwd, 'jsr.json');
 
+    // we either find the value from this file
     if (await fileExists(filePath)) {
       const packageFile = await Deno.open(filePath);
 
       for await (const line of readLines(packageFile)) {
-        if (NodeStrategy.VERSION_REGEX.test(line)) {
-          const items = line.match(NodeStrategy.VERSION_REGEX);
+        if (JsrStrategy.VERSION_REGEX.test(line)) {
+          const items = line.match(JsrStrategy.VERSION_REGEX);
           if (items?.groups?.currentVersion) {
             packageFile.close();
             return items.groups?.currentVersion;
           }
         }
       }
+
     }
 
-    // If we get here, it means we couldn't find a version in the package.json file
-    // We attempt to grab the most recent tag from the repo
+    // Or we check tags
+
     const tag = await this.git.getLatestTag(false);
     if (tag) {
       return tag.indexOf(args.versionPrefix) === 0
@@ -77,8 +84,6 @@ export default class NodeStrategy extends VersionStrategy {
         : tag.trim();
     }
 
-    throw Error(
-      'Could not determine version through package.json or git tags.',
-    );
+    throw new Error('Could not determine version through jsr.json or git tags');
   }
 }
