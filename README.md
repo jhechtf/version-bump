@@ -155,10 +155,14 @@ The strategy to fetch version information. The default is `deno`, and the only
 other options currently bundled together is the `node` and `cargo` strategies.
 Please see the table below for more information about these two items.
 
-|                        | Deno                               | Node                                           | Cargo                                                                          |
-| :--------------------: | ---------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
-| Primary Version Source | `VERSION` export in root `deps.ts` | `"version"` field in root `package.json` file. | `version` key in `[package]` section of `Cargo.toml` located in same directory |
-|        Fallback        | most recent git tag or `0.1.0`     | most recent git tag or `0.1.0`.                | `0.1.0`                                                                        |
+| Preset | Preset Value | Primary Version Source | Fallback |
+| ----- | ----- | --- | --- |
+| Deno (legacy) | `deno` | `VERSION` export in root `deps.ts` | Most recent git tag or `0.1.0` |
+| Deno(Json) | `deno-json`| `"version"` key in `deno.json` or `deno.jsonc` | ^ 
+| Cargo | `cargo` | `version` key in `[package]` section of `Cargo.toml` | ^ |
+| Node | `node` | `"version"` key in `package.json` | ^ |
+| JSR | `jsr` | `"version"` key in `jsr.json` | ^ 
+
 
 In order to make a custom `VersionStrategy` please check the
 [Making a Version Strategy](#making-a-version-strategy)
