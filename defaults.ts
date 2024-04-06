@@ -2,6 +2,7 @@ export const argDefaults = {
   allowEmpty: false,
   preset: 'angular',
   versionStrategy: 'deno',
+  jsonFile: 'jsr.json',
   changelogWriter: 'default',
   changelogPath: 'CHANGELOG.md',
   baseVersion: false,
