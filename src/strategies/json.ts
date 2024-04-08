@@ -14,19 +14,17 @@ import { fileExists } from 'util';
 export default class JsonStrategy extends VersionStrategy {
   static VERSION_REGEX = /"version":\s?"(?<currentVersion>.*)"\s?(?<ending>,?)/;
 
-  fileName: string;
-
   constructor(
     @inject(Git) public readonly git: Git,
     @inject('cwd') public readonly cwd: string,
     @inject('args') public readonly args: Args,
+    public readonly fileName = args.jsonFile
   ) {
     super();
-    this.fileName = args.jsonFile;
   }
 
   async bump(newVersion: string): Promise<boolean> {
-    const jsrJson = resolve(this.cwd, 'jsr.json');
+    const jsrJson = resolve(this.cwd, this.fileName);
     const jsrFile = await Deno.open(jsrJson, {
       create: true,
       write: true,
@@ -59,7 +57,7 @@ export default class JsonStrategy extends VersionStrategy {
   }
 
   async getCurrentVersion(): Promise<string> {
-    const filePath = resolve(this.cwd, 'jsr.json');
+    const filePath = resolve(this.cwd, this.fileName);
 
     // we either find the value from this file
     if (await fileExists(filePath)) {
