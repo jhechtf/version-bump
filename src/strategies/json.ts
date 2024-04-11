@@ -18,7 +18,7 @@ export default class JsonStrategy extends VersionStrategy {
     @inject(Git) public readonly git: Git,
     @inject('cwd') public readonly cwd: string,
     @inject('args') public readonly args: Args,
-    public readonly fileName = args.jsonFile
+    public fileName = args.jsonFile,
   ) {
     super();
   }

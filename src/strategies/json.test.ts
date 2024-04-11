@@ -18,7 +18,7 @@ const map = new Map<string, string>([
   ['deno', 'deno.json'],
   ['deno-jsonc', 'deno.jsonc'],
   ['node', 'package.json'],
-  ['jsr', 'jsr.json']
+  ['jsr', 'jsr.json'],
 ]);
 
 const paths = new Map<string, string>();
@@ -124,108 +124,109 @@ afterAll(async () => {
 
 describe('Generic JSON Version Strategy', async () => {
   await beforeAll(async () => {
+    for (const [shortName, jsonFile] of map) {
+      const path = await setupPackage(
+        `universal-json-${shortName}-test`,
+        'git@github.com:fake/repo.git',
+      );
+      paths.set(shortName, path);
+      await Deno.writeTextFile(
+        `${path}/${jsonFile}`,
+        JSON.stringify(
+          {
+            version: '0.1.0',
+            name: '@testing/something',
+            keywords: ['testing'],
+          },
+          null,
+          2,
+        ),
+      );
 
-  for(const [shortName, jsonFile] of map) {
-    console.info('yo?');
+      await fakeGitHistory(path, [
+        {
+          subject: 'chore: Initial commit',
+          tag: '0.1.0',
+        },
+      ]);
+    }
+
     const path = await setupPackage(
-      `universal-json-${shortName}-test`,
-      'git@github.com:fake/repo.git'
+      'universal-json-vs-test',
+      'git@github.com:fake/repo.git',
     );
-    paths.set(shortName, path);
-    console.info(paths);
     await Deno.writeTextFile(
-      `${path}/${jsonFile}`,
-      JSON.stringify({
-        version: '0.1.0',
-        name: '@testing/something',
-        keywords: ['testing']
-      }, null, 2)
+      `${path}/deno.json`,
+      JSON.stringify(
+        {
+          version: '0.1.0',
+          name: '@test/something',
+          keywords: ['testing'],
+        },
+        null,
+        2,
+      ),
     );
 
-    await fakeGitHistory(path, [
-      {
-        subject: 'chore: Initial commit',
-        tag: '0.1.0'
-      },
-    ]);
-  }
-
-  const path = await setupPackage(
-    'universal-json-vs-test',
-    'git@github.com:fake/repo.git',
-  );
-  await Deno.writeTextFile(
-    `${path}/deno.json`,
-    JSON.stringify(
-      {
-        version: '0.1.0',
-        name: '@test/something',
-        keywords: ['testing'],
-      },
-      null,
-      2,
-    ),
-  );
-
-  const path3 = await setupPackage(
-    'universal-json-vs-test-with-jsonc',
-    'git@github.com:fake/repo.git',
-  );
-  await Deno.writeTextFile(
-    `${path3}/jsr.json`,
-    `{
+    const path3 = await setupPackage(
+      'universal-json-vs-test-with-jsonc',
+      'git@github.com:fake/repo.git',
+    );
+    await Deno.writeTextFile(
+      `${path3}/jsr.json`,
+      `{
   // Current version
   "version": "0.1.1",
   // Name
   "name": "@testing/test-repo"
 }`,
-  );
-  await fakeGitHistory(
-    path3,
-    [
-      {
-        subject: 'chore: Initial commit',
-        tag: '0.1.1',
-      },
-    ],
-  );
+    );
+    await fakeGitHistory(
+      path3,
+      [
+        {
+          subject: 'chore: Initial commit',
+          tag: '0.1.1',
+        },
+      ],
+    );
 
-  const path2 = await setupPackage(
-    'universal-json-vs-test-empty',
-    'git@github.com:fake/repo.git',
-  );
-  await fakeGitHistory(
-    path2,
-    [
-      {
-        subject: 'chore: Initial commit',
-        tag: '0.1.1',
-      },
-    ],
-  );
+    const path2 = await setupPackage(
+      'universal-json-vs-test-empty',
+      'git@github.com:fake/repo.git',
+    );
+    await fakeGitHistory(
+      path2,
+      [
+        {
+          subject: 'chore: Initial commit',
+          tag: '0.1.1',
+        },
+      ],
+    );
 
-  await fakeGitHistory(
-    path,
-    [
-      {
-        subject: 'chore: Initial commit',
-        tag: '0.1.0',
-      },
-    ],
-  );
+    await fakeGitHistory(
+      path,
+      [
+        {
+          subject: 'chore: Initial commit',
+          tag: '0.1.0',
+        },
+      ],
+    );
 
-  container.bind<Git>(Git).to(Git);
-  container.bind<VersionStrategy>(VersionStrategy).to(JsonStrategy);
-});
+    container.bind<Git>(Git).to(Git);
+    container.bind<VersionStrategy>(VersionStrategy).to(JsonStrategy);
+  });
   afterEach(() => {
     container.unbind('cwd');
   });
-  it('testing', ()=>{
+  it('testing', () => {
     container.bind('cwd').toConstantValue('');
     assertEquals(1, 1);
   });
   console.info(paths);
-  for(const [shortName, path] of paths) {
+  for (const [shortName, path] of paths) {
     console.info(shortName);
     const file = map.get(shortName) as string;
     describe(`${shortName} ${file}`, () => {
