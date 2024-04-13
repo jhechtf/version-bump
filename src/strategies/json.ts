@@ -8,7 +8,7 @@ import {
 } from '../../deps.ts';
 import args from '../../args.ts';
 import { Git } from '../git.ts';
-import { fileExists } from 'util';
+import { fileExists } from '../util.ts';
 
 @injectable()
 export default class JsonStrategy extends VersionStrategy {
