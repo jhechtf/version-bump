@@ -1,4 +1,4 @@
-import { fileExists } from 'util';
+import { fileExists } from '../util.ts';
 import { type Args, inject, injectable, resolve } from '../../deps.ts';
 import { Git } from '../git.ts';
 import JsonStrategy from './json.ts';
