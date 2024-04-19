@@ -2,30 +2,30 @@ import { Args, resolve, toFileUrl } from './deps.ts';
 import './src/cwd.ts';
 
 import { container } from './src/container.ts';
+import DefaultWriter from './src/changelog/default.ts';
+import DenoJsonStrategy from './src/strategies/deno.json.ts';
+import DenoVersionStrategy from './src/strategies/deno.ts';
+import JsrStrategy from './src/strategies/jsr.ts';
 import {
   VersionStrategy,
   VersionStrategyConstructable,
 } from './src/versionStrategy.ts';
-import DenoVersionStrategy from './src/strategies/deno.ts';
-import DenoJsonStrategy from './src/strategies/deno.json.ts';
-import JsrStrategy from './src/strategies/jsr.ts';
 
-import { VersionArgsCli } from './src/versionBumpCli.ts';
-import NodeStrategy from './src/strategies/node.ts';
-import CargoStrategy from './src/strategies/cargo.ts';
-import { GitConvention, GitConventionBuildable } from './src/gitConvention.ts';
-import AngularPreset from './src/presets/angular.ts';
+import './logger.ts';
 import {
   ChangelogWriter,
   ChangelogWriterBuldable,
 } from './src/changelogWriter.ts';
-import DefaultWriter from './src/changelog/default.ts';
+import ConfigLoader from './src/config.ts';
 import { Git } from './src/git.ts';
+import { GitConvention, GitConventionBuildable } from './src/gitConvention.ts';
 import { GitProvider, GitProviderBuildable } from './src/gitProvider.ts';
 import HistoricCli from './src/historic.ts';
-import './logger.ts';
+import AngularPreset from './src/presets/angular.ts';
+import CargoStrategy from './src/strategies/cargo.ts';
+import NodeStrategy from './src/strategies/node.ts';
 import { normalizeImport } from './src/util.ts';
-import ConfigLoader from './src/config.ts';
+import { VersionArgsCli } from './src/versionBumpCli.ts';
 
 /**
  * 1. Check which preset we are using, load if necessary.
@@ -164,12 +164,12 @@ if (args.changelogWriter !== 'default') {
   container.bind<ChangelogWriter>(ChangelogWriter).to(imported);
 }
 
-const cli = container.resolve<VersionArgsCli>(VersionArgsCli);
+const cli: VersionArgsCli = container.resolve<VersionArgsCli>(VersionArgsCli);
 
 export default cli;
 
 if (args.historic) {
-  const historic = container.resolve<HistoricCli>(HistoricCli);
+  const historic: HistoricCli = container.resolve<HistoricCli>(HistoricCli);
   await historic.run();
   Deno.exit();
 }
