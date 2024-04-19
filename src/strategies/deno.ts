@@ -14,7 +14,7 @@ export default class DenoTsStrategy extends VersionStrategy {
   FIND = /VERSION\s?(:|=)\s?('|")(?<currentVersion>.*?)\2(,|;)?/;
 
   constructor(
-    @inject(Git) public readonly git: Git,
+    @inject('git') public readonly git: Git,
     @inject('cwd') public readonly cwd: string,
     @inject('args') public readonly args: Args,
   ) {
